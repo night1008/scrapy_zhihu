@@ -16,9 +16,6 @@ class Collection(Base):
 	name = Column(String)						# 名称
 	user_token = Column(String, default=None)	# 收藏者域名标识
 	description = Column(String, default=None)	# 描述
-	created_at = Column(DateTime, default=datetime.now)
-	updated_at = Column(DateTime, default=datetime.now)
-	deleted_at = Column(DateTime)
 
 	def __repr__(self):
 		return "<Collection(name='%s')>" % (self.name)
@@ -98,6 +95,7 @@ class User(Base):
 		return "<User(name='%s')>" % (self.name)
 	
 
+# memo: 未登录下得不到
 class UserFollower(Base):
 	__tablename__ = 'user_follower'
 
