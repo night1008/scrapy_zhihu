@@ -2,7 +2,7 @@
 from datetime import datetime
 from scrapy import Spider, Request
 import re
-from zhihu.items import AnswerItem, QuestionItem
+from zhihu.items import AnswerItem, QuestionItem, CollectionAnswerItem
 from zhihu.utils import get_date
 
 class CollectionSpider(Spider):
@@ -15,7 +15,7 @@ class CollectionSpider(Spider):
     """
     name = 'zhihu_collection'
     allowed_domains = ["www.zhihu.com"]
-    start_urls = ['https://www.zhihu.com/collection/25185328']
+    start_url = 'https://www.zhihu.com/collection/25185328'
     count = 0
 
     # def start_requests(self):
@@ -44,6 +44,16 @@ class CollectionSpider(Spider):
     # def after_login(self, response) :
     #     for url in self.start_urls :
     #         yield self.make_requests_from_url(url)
+
+    def start_requests(self):
+        m = re.search('\/collection\/(.+)', self.start_url)
+        if not m:
+            self.logger.error('============>')
+            self.logger.error('Parse no collection id')
+            return
+        self.collection_id = m.groups()[0]
+
+        return [Request(self.start_url, callback=self.parse)]
 
     def parse(self, response):
         self.logger.info('parse')
@@ -115,8 +125,12 @@ class CollectionSpider(Spider):
         answer_item['review_count'] = response.meta.get('review_count')
         answer_item['published_at'] = answer_published_at
         answer_item['edited_at'] = answer_edited_at
-
         yield answer_item
+
+        collection_answer_item = CollectionAnswerItem()
+        collection_answer_item['collection_id'] = self.collection_id
+        collection_answer_item['answer_id'] = answer_id
+        yield collection_answer_item
 
     def parse_question(self, response):
         question_id = re.search('question/(\d{8})', response.url).groups()[0]

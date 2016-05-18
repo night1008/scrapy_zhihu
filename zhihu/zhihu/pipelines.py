@@ -4,8 +4,8 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
-from zhihu.items import AnswerItem, QuestionItem, UserItem
-from models import Session, Answer, Question, User
+from zhihu.items import AnswerItem, QuestionItem, UserItem, CollectionAnswerItem
+from models import Session, Answer, Question, User, CollectionAnswer
 
 class ZhihuPipeline(object):
     def process_item(self, item, spider):
@@ -32,10 +32,20 @@ class ZhihuPipeline(object):
 
         if isinstance(item, UserItem):
             session = Session()
-            user = session.question(User).filter_by(token=item['token']).first()
+            user = session.query(User).filter_by(token=item['token']).first()
             if not user:
                 user = User(**dict(item))
                 session.add(user)
+                session.commit()
+                session.close()
+
+        if isinstance(item, CollectionAnswerItem):
+            session = Session()
+            collection_answer = session.query(CollectionAnswer).filter_by( \
+                collection_id=item['collection_id'], answer_id=item['answer_id']).first()
+            if not collection_answer:
+                collection_answer = CollectionAnswer(**dict(item))
+                session.add(collection_answer)
                 session.commit()
                 session.close()
             

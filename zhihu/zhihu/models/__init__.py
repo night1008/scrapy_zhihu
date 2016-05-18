@@ -95,6 +95,17 @@ class User(Base):
 		return "<User(name='%s')>" % (self.name)
 	
 
+class CollectionAnswer(Base):
+	__tablename__ = 'collection_answer'
+
+	id = Column(Integer, primary_key=True)
+	collection_id = Column(Integer)
+	answer_id = Column(Integer)
+
+	def __repr__(self):
+		return "<CollectionAnswer(collection_id='%s', answer_id='%s')>" %
+		(self.collection_id, self.answer_id)
+
 # memo: 未登录下得不到
 class UserFollower(Base):
 	__tablename__ = 'user_follower'
