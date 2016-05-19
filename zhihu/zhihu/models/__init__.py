@@ -16,6 +16,8 @@ class Collection(Base):
 	name = Column(String)						# 名称
 	user_token = Column(String, default=None)	# 收藏者域名标识
 	description = Column(String, default=None)	# 描述
+	created_at = Column(DateTime, default=datetime.now)
+	updated_at = Column(DateTime, default=datetime.now)  #可用于更新机制
 
 	def __repr__(self):
 		return "<Collection(name='%s')>" % (self.name)
@@ -32,6 +34,8 @@ class Answer(Base):
 	review_count = Column(Integer, default=None)	# 评论数
 	published_at = Column(DateTime, default=None)	# 发布时间
 	edited_at = Column(DateTime, default=None)		# 编辑时间
+	created_at = Column(DateTime, default=datetime.now)
+	updated_at = Column(DateTime, default=datetime.now)
 
 	def __repr__(self):
 		return "<Answer(content='%s')>" % (self.content[:20])
@@ -48,6 +52,8 @@ class Question(Base):
 	answer_count = Column(Integer)				# 回答数
 	visit_count = Column(Integer)				# 访问数
 	is_top = Column(Boolean, default=None)	    # 是否是精华问题
+	created_at = Column(DateTime, default=datetime.now)
+	updated_at = Column(DateTime, default=datetime.now)
 
 	def __repr__(self):
 		return "<Question(title='%s')>" % (self.title)
@@ -90,6 +96,8 @@ class User(Base):
 	collection_count = Column(Integer)  # 收藏夹数
 	log_count = Column(Integer)			# 公共编辑数
 	visit_count = Column(Integer)		# 用户访问数
+	created_at = Column(DateTime, default=datetime.now)
+	updated_at = Column(DateTime, default=datetime.now)
 
 	def __repr__(self):
 		return "<User(name='%s')>" % (self.name)
@@ -101,6 +109,8 @@ class CollectionAnswer(Base):
 	id = Column(Integer, primary_key=True)
 	collection_id = Column(Integer)
 	answer_id = Column(Integer)
+	created_at = Column(DateTime, default=datetime.now)
+	updated_at = Column(DateTime, default=datetime.now)
 
 	def __repr__(self):
 		return "<CollectionAnswer(collection_id='%s', answer_id='%s')>" %
