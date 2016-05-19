@@ -1,5 +1,5 @@
 # coding: utf-8
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean
@@ -11,6 +11,7 @@ Session = sessionmaker(bind=engine)
 
 class Collection(Base):
 	__tablename__ = 'collection'
+	UPDATED_DAY = 10
 
 	id = Column(Integer, primary_key=True)		# 收藏夹ID，与知乎对应				
 	name = Column(String)						# 名称
@@ -19,11 +20,15 @@ class Collection(Base):
 	created_at = Column(DateTime, default=datetime.now)
 	updated_at = Column(DateTime, default=datetime.now)  #可用于更新机制
 
+	def is_need_update(self):
+		return self.updated_at + timedelta(days=self.UPDATED_DAY) > datetime.now()
+
 	def __repr__(self):
 		return "<Collection(name='%s')>" % (self.name)
 
 class Answer(Base):
 	__tablename__ = 'answer'
+	UPDATED_DAY = 5
 
 	id = Column(Integer, primary_key=True)      	# 答案ID，与知乎对应
 	user_token = Column(String, default=None)		# 回答者域名标识
@@ -37,12 +42,16 @@ class Answer(Base):
 	created_at = Column(DateTime, default=datetime.now)
 	updated_at = Column(DateTime, default=datetime.now)
 
+	def is_need_update(self):
+		return self.updated_at + timedelta(days=self.UPDATED_DAY) > datetime.now()
+
 	def __repr__(self):
 		return "<Answer(content='%s')>" % (self.content[:20])
 
 class Question(Base):
 	__tablename__ = 'question'
-           
+    UPDATED_DAY = 10
+
 	id = Column(Integer, primary_key=True)   	# 问题ID，与知乎对应
 	user_token = Column(String, default=None)	# 提问者域名标识
 	title = Column(String)						# 标题
@@ -54,6 +63,9 @@ class Question(Base):
 	is_top = Column(Boolean, default=None)	    # 是否是精华问题
 	created_at = Column(DateTime, default=datetime.now)
 	updated_at = Column(DateTime, default=datetime.now)
+
+	def is_need_update(self):
+		return self.updated_at + timedelta(days=self.UPDATED_DAY) > datetime.now()
 
 	def __repr__(self):
 		return "<Question(title='%s')>" % (self.title)
@@ -74,6 +86,7 @@ class Task(Base):
 
 class User(Base):
 	__tablename__ = 'user'
+	UPDATED_DAY = 10
 
 	id = Column(Integer, primary_key=True)
 	token = Column(String)				# 个性域名标志
@@ -98,6 +111,9 @@ class User(Base):
 	visit_count = Column(Integer)		# 用户访问数
 	created_at = Column(DateTime, default=datetime.now)
 	updated_at = Column(DateTime, default=datetime.now)
+
+	def is_need_update(self):
+		return self.updated_at + timedelta(days=self.UPDATED_DAY) > datetime.now()
 
 	def __repr__(self):
 		return "<User(name='%s')>" % (self.name)
