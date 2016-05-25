@@ -5,12 +5,13 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 from datetime import datetime
-from zhihu.items import AnswerItem, QuestionItem, UserItem, CollectionAnswerItem
-from models import Session, Answer, Question, User, CollectionAnswer
+from zhihu.items import AnswerItem, QuestionItem, UserItem, CollectionAnswerItem, CollectionItem
+from models import Session, Answer, Question, User, CollectionAnswer, Collection
+
 
 class ZhihuPipeline(object):
     def process_item(self, item, spider):
-    	if isinstance(item, AnswerItem):
+        if isinstance(item, AnswerItem):
             session = Session()
             answer = session.query(Answer).filter_by(id=item['id']).first()
             if not answer:
@@ -27,7 +28,7 @@ class ZhihuPipeline(object):
                 answer.vote_up = item['vote_up']
                 answer.review_count = item['review_count']
                 answer.updated_at = datetime.now()
-    	    session.commit()
+            session.commit()
             session.close()
 
         if isinstance(item, QuestionItem):
@@ -82,12 +83,25 @@ class ZhihuPipeline(object):
 
         if isinstance(item, CollectionAnswerItem):
             session = Session()
-            collection_answer = session.query(CollectionAnswer).filter_by( \
+            collection_answer = session.query(CollectionAnswer).filter_by(
                 collection_id=item['collection_id'], answer_id=item['answer_id']).first()
             if not collection_answer:
                 collection_answer = CollectionAnswer(**dict(item))
                 session.add(collection_answer)
                 session.commit()
                 session.close()
-            
+
+        if isinstance(item, CollectionItem):
+            session = Session()
+            collection = session.query(Collection).filter_by(id=item['id']).first()
+            if not collection:
+                collection = Collection(**dict(item))
+                session.add(collection)
+            elif collection.is_need_update():
+                collection.title = item['title']
+                collection.description = item['description']
+                collection.review_count = item['review_count']
+            session.commit()
+            session.close()
+
         return item

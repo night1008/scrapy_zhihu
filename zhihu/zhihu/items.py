@@ -58,12 +58,13 @@ class UserItem(scrapy.Item):
     thank_count = scrapy.Field()
     visit_count = scrapy.Field()
 
-class CollectionItem(scrapy.Item)
+class CollectionItem(scrapy.Item):
     id = scrapy.Field()
     user_token = scrapy.Field()
-    name = scrapy.Field()
+    title = scrapy.Field()
+    review_count = scrapy.Field()
     description = scrapy.Field()
 
-class CollectionAnswerItem(scrapy.Item)
+class CollectionAnswerItem(scrapy.Item):
     collection_id = scrapy.Field()
     answer_id = scrapy.Field()

@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+	<head>
+		<title>answer</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	 	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+		
+		
+	</head>
+	<body>
+		{{ pagination }}
+		<div class="container">
+			<div class="row">
+				{% for answer in answers %}
+					<div class="col-md-12">
+						<div class="panel panel-primary">
+			  				<div class="panel-body">
+                                <label class="label label-primary pull-right"><i class="glyphicon glyphicon-arrow-up"></i> {{ answer.vote_up }}</label>
+                                <br>
+			    				{{ answer.summary | safe }}
+			    				{% if answer.summary | length >= 200 %}
+			    				...
+			    				{% endif %}
+			    				<br>
+			    				<a href="/answer/{{ answer.id }}" target="_blank">查看详情</a> &nbsp;&nbsp;
+			    				<a href="https://www.zhihu.com/question/{{ answer.question_id }}/answer/{{ answer.id }}" target="_blank">查看原链接</a>
+			 				</div>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+			<div>
+				<nav>
+				  	<ul class="pagination">
+				  		{% if pagination.current_page > 1 %}
+					    <li>
+					      	<a href="#" aria-label="Previous">
+					        	<span aria-hidden="true">&laquo;</span>
+					      	</a>
+					    </li>
+					    {% else %}
+					    <li class="disabled">
+					      	<a href="javascript:void(0);" aria-label="Previous">
+					        	<span aria-hidden="true">&laquo;</span>
+					      	</a>
+					    </li>
+					    {% endif %}
+					    <li><a href="#">1</a></li>
+					    <li><a href="#">2</a></li>
+					    <li><a href="#">3</a></li>
+					    <li><a href="#">4</a></li>
+					    <li><a href="#">5</a></li>
+					    <li>
+					      	<a href="#" aria-label="Next">
+					        	<span aria-hidden="true">&raquo;</span>
+					      	</a>
+					    </li>
+				  	</ul>
+				</nav>
+			</div>
+		</div>
+	</body>
+</html>
