@@ -17,6 +17,7 @@ class AnswerItem(scrapy.Item):
     id = scrapy.Field()
     user_token = scrapy.Field()
     question_id = scrapy.Field()
+    summary = scrapy.Field()
     content = scrapy.Field()
     content_length = scrapy.Field()
     review_count = scrapy.Field()

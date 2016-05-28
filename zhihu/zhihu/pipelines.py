@@ -18,6 +18,7 @@ class ZhihuPipeline(object):
                 answer = Answer(**dict(item))
                 session.add(answer)
             elif answer.edited_at and answer.edited_at != item['edited_at']:
+                answer.summary = item['summary']
                 answer.content = item['content']
                 answer.vote_up = item['vote_up']
                 answer.review_count = item['review_count']

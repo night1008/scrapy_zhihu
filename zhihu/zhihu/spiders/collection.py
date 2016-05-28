@@ -121,6 +121,7 @@ class CollectionSpider(Spider):
     def parse_answer(self, response):
         question_id, answer_id = re.search('question/(\d{8})/answer/(\d{8})', response.url).groups()
         answer_div = response.css('div#zh-question-answer-wrap')
+        answer_summary = answer_div.css('div.zh-summary.summary').re_first('<div.*?>([\S\s]+)\s*?<a.*?>.*<\/a>\s*<\/div>')
         answer_content = answer_div.css('div.zm-editable-content').re_first('<div.*?>([\S\s]+)<\/div>')
         answer_vote_up = answer_div.css('div.zm-votebar button.up span.count::text').extract_first().replace('K',
                                                                                                              '000').replace(
@@ -141,6 +142,7 @@ class CollectionSpider(Spider):
         answer_item['id'] = answer_id
         answer_item['user_token'] = answer_user_token
         answer_item['question_id'] = question_id
+        answer_item['summary'] = answer_summary
         answer_item['content'] = answer_content
         answer_item['vote_up'] = answer_vote_up
         answer_item['vote_down'] = None

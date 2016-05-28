@@ -1,4 +1,5 @@
 # coding: utf-8
+import math
 from flask import Flask
 from flask import json, jsonify, abort, request
 from flask import render_template
@@ -14,27 +15,50 @@ app = Flask(__name__)
 app.debug = True
 LIMIT = 10
 
+def get_pagination(total, limit, current_page):
+    last_page = int(math.ceil(total / limit))
+    page_range = []
+
+    if last_page > 1:
+        for i in range(max(current_page - 2, 2), min(max(current_page - 2, 2) + 3, last_page - 1)):
+            page_range.append(i)
+
+    return {
+        'total': total,
+        'current_page': current_page,
+        'limit': limit,
+        'last_page': last_page,
+        'has_prev_page': current_page > 1,
+        'has_next_page': current_page + 1 <= last_page,
+        'page_range': page_range,
+    }
+
 @app.route("/")
 def hello():
     return "Hello World!"
 
 @app.route("/answer")
 def answer():
-    page = request.args.get('page', 1)
+    # @todo: 换页检测
+    page = request.args.get('page', 1, int)
     session = Session()
-    # answer = session.query(Answer).first()
-    offset = (page - 1 ) * LIMIT
+    offset = (page - 1) * LIMIT
+    print '=============>'
+    print offset
     answers_query = session.query(Answer.id,
                                 Answer.vote_up,
                                 func.left(Answer.content, 200).label('summary')
                             ).order_by(Answer.vote_up.desc())
-    answers = answers_query.offset(offset).limit(LIMIT)
 
-    pagination = {
-        'total': answers_query.count(),
-        'current_page': page,
-        'limit': LIMIT,
-    }
+    answers = answers_query.offset(offset).limit(LIMIT)
+    print answers_query.count()
+    print answers.count()
+    pagination = get_pagination(answers_query.count(), LIMIT, page)
+    # {
+    #     'total': ,
+    #     'current_page': page,
+    #     'limit': LIMIT,
+    # }    
 
     return render_template('answer/index.html', answers=answers, pagination=pagination)
 

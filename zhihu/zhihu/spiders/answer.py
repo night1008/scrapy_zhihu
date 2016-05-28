@@ -16,7 +16,7 @@ class AnswerSpider(Spider):
     """
     name = 'zhihu_answer'
     allowed_domains = ["www.zhihu.com"]
-    start_urls = ['https://www.zhihu.com/question/45219415/answer/98957967']
+    start_urls = ['https://www.zhihu.com/question/41311028/answer/90756693']
 
     def parse(self, response):
         question_url_str = response.css('h2.zm-item-title a::attr("href")').extract_first()
@@ -28,6 +28,7 @@ class AnswerSpider(Spider):
 
         question_id, answer_id = re.search('question/(\d{8})/answer/(\d{8})', response.url).groups()
         answer_div = response.css('div#zh-question-answer-wrap')
+        answer_summary = answer_div.css('div.zh-summary.summary').re_first('<div.*?>([\S\s]+)\s*?<a.*?>.*<\/a>\s*<\/div>')
         answer_content = answer_div.css('div.zm-editable-content').re_first('<div.*?>([\S\s]+)<\/div>')
         answer_vote_up = answer_div.css('div.zm-votebar button.up span.count::text').extract_first().replace('K',
                                                                                                              '000').replace(
@@ -48,6 +49,7 @@ class AnswerSpider(Spider):
         answer_item['id'] = answer_id
         answer_item['user_token'] = answer_user_token
         answer_item['question_id'] = question_id
+        answer_item['summary'] = answer_summary
         answer_item['content'] = answer_content
         answer_item['content_length'] = len(answer_content) if answer_content else 0
         answer_item['vote_up'] = answer_vote_up

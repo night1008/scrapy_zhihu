@@ -36,6 +36,7 @@ class Answer(Base):
     id = Column(Integer, primary_key=True)        # 答案ID，与知乎对应
     user_token = Column(String, default=None)        # 回答者域名标识
     question_id = Column(Integer)                    # 问题ID
+    summary = Column(Text)                            # 摘要
     content = Column(Text)                            # 回答内容
     vote_up = Column(Integer)                        # 点赞数
     vote_down = Column(Integer)                        # 反对数
