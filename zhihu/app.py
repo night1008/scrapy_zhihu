@@ -35,7 +35,7 @@ def get_pagination(total, limit, current_page):
 
 @app.route("/")
 def hello():
-    return "Hello World!"
+    return render_template('layout.html')
 
 @app.route("/answer")
 def answer():
@@ -47,6 +47,7 @@ def answer():
     print offset
     answers_query = session.query(Answer.id,
                                 Answer.question_id,
+                                Answer.user_token,
                                 Answer.vote_up,
                                 Answer.summary,
                                 Question.title
