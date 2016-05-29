@@ -82,10 +82,24 @@ def answer_detail(answer_id):
 
 @app.route("/question")
 def question():
+    page = request.args.get('page', 1, int)
     session = Session()
-    # answer = session.query(Answer).first()
-    questions = session.query(Question).order_by(Question.created_at).all()
-    return render_template('question/index.html', questions=questions)
+    offset = (page - 1) * LIMIT
+    
+    questions_query = session.query(Question.id,
+                                Question.title,
+                                Question.content,
+                            ) \
+                            .order_by(Question.answer_count.desc())
+                            # ).filter(Answer.question_id == Question.id) \
+                            
+
+    questions = questions_query.offset(offset).limit(LIMIT)
+    
+    pagination = get_pagination(questions_query.count(), LIMIT, page)
+
+    return render_template('question/index.html', questions=questions, pagination=pagination)
+
 
 @app.route("/collection")
 def collection():
