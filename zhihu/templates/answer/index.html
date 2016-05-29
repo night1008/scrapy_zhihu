@@ -13,6 +13,9 @@
 				{% for answer in answers %}
 					<div class="col-md-12">
 						<div class="panel panel-primary">
+							<div class="panel-heading">
+							    <h3 class="panel-title">{{ answer.title }}</h3>
+							 </div>
 			  				<div class="panel-body">
                                 <label class="label label-primary pull-right"><i class="glyphicon glyphicon-arrow-up"></i> {{ answer.vote_up }}</label>
                                 <br>
@@ -44,6 +47,7 @@
 					      	</a>
 					    </li>
 					    {% endif %}
+
 					    {% if 1 in pagination.page_range %}
 						    {% for page in pagination.page_range %}
 						    <li>
@@ -73,6 +77,7 @@
 							    </li>
 						    {% endfor %}
 					    {% endif %}
+
 					    {% if pagination.last_page not in pagination.page_range %}
 						    <li>
 						      	<a href="javascript:void(0);"  aria-label="Previous">
@@ -83,13 +88,7 @@
 						      	<a href="{{ url_for('answer') }}?page={{ pagination.last_page}}">
 						        	{{ pagination.last_page }}
 						      	</a>
-						    </li>
-					    {% else %}
-						    <li>
-						      	<a href="{{ url_for('answer') }}?page={{ pagination.last_page}}">
-						        	{{ pagination.last_page }}
-						      	</a>
-						    </li>
+						    </li>					   
 						{% endif %}
 						{% if pagination.has_next_page %}
 					    <li>

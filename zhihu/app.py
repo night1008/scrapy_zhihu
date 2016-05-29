@@ -20,7 +20,7 @@ def get_pagination(total, limit, current_page):
     page_range = []
 
     if last_page > 1:
-        for i in range(max(current_page - 2, 2), min(max(current_page - 2, 2) + 3, last_page - 1)):
+        for i in range(max(current_page - 2, 2), min(max(current_page - 2, 2) + 3, last_page + 1)):
             page_range.append(i)
 
     return {
@@ -46,19 +46,18 @@ def answer():
     print '=============>'
     print offset
     answers_query = session.query(Answer.id,
+                                Answer.question_id,
                                 Answer.vote_up,
-                                func.left(Answer.content, 200).label('summary')
-                            ).order_by(Answer.vote_up.desc())
+                                Answer.summary,
+                                Question.title
+                            ).filter(Answer.question_id == Question.id) \
+                            .order_by(Answer.vote_up.desc())
 
     answers = answers_query.offset(offset).limit(LIMIT)
     print answers_query.count()
     print answers.count()
+    print answers[0]
     pagination = get_pagination(answers_query.count(), LIMIT, page)
-    # {
-    #     'total': ,
-    #     'current_page': page,
-    #     'limit': LIMIT,
-    # }    
 
     return render_template('answer/index.html', answers=answers, pagination=pagination)
 
@@ -66,7 +65,14 @@ def answer():
 def answer_detail(answer_id):
     session = Session()
     # answer = session.query(Answer).first()
-    answer = session.query(Answer).filter_by(id=answer_id).first()
+    answer = session.query(Answer.id,
+                        Answer.vote_up,
+                        Answer.content,
+                        Answer.question_id,
+                         Question.title
+                        ).filter(Answer.question_id == Question.id) \
+                        .filter_by(id=answer_id).first()
+    print answer.id
     if not answer:
         abort(404)
     return render_template('answer/detail.html', answer=answer)

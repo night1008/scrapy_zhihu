@@ -1,4 +1,5 @@
 # coding: utf-8
+import re
 from scrapy import Selector
 
 res = u"""<div class="zh-summary summary clearfix" style="display:none;">
@@ -11,5 +12,12 @@ res = u"""<div class="zh-summary summary clearfix" style="display:none;">
 
 
 if __name__ =='__main__':
-	selector = Selector(text=res)
-	print selector.css('div.zh-summary.summary').re_first('<div.*?>([\S\s]+)<\/div>')
+	# selector = Selector(text=res)
+	# print selector.css('div.zh-summary.summary').re_first('<div.*?>([\S\s]+)<\/div>')
+	published_date = None 
+	date_str =  u's$t$发布于 07:38' #u'编辑于 昨天 11:55' #u'发布于 2016-05-25'
+	m = re.search(u'(\s+([\u4e00-\u9fa5]*)\s*?([0-9:]{5}))|([0-9-]{10})', date_str)
+	if m:
+		print m.groups()
+	else:
+		print 'no group'

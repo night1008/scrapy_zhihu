@@ -16,8 +16,9 @@ class CollectionSpider(Spider):
     """
     name = 'zhihu_collection'
     allowed_domains = ["www.zhihu.com"]
-    start_url = 'https://www.zhihu.com/collection/25185328'
+    start_url = 'https://www.zhihu.com/collection/20170861'
     is_parse_collection = False
+    
     # def start_requests(self):
     #     return [Request("https://www.zhihu.com/login", meta = {'cookiejar' : 1}, callback = self.post_login)]
 
@@ -46,7 +47,7 @@ class CollectionSpider(Spider):
     #         yield self.make_requests_from_url(url)
 
     def start_requests(self):
-        m = re.search('\/collection\/(.+)', self.start_url)
+        m = re.search('\/collection\/(\d{8,})', self.start_url)
         if not m:
             self.logger.error('============>')
             self.logger.error('Parse no collection id')
@@ -65,12 +66,13 @@ class CollectionSpider(Spider):
                 'div#zh-single-answer-author-info h2.zm-list-content-title a::attr(href)').extract_first()
             collection_user_token = None
 
-            m = re.search('\/people\/(.+)', collection_user_uri)
-            if m:
-                collection_user_token = m.groups()[0]
-            else:
-                self.logger.error('============>')
-                self.logger.error('Parse no user token')
+            if collection_user_uri:
+                m = re.search('\/people\/(.+)', collection_user_uri)
+                if m:
+                    collection_user_token = m.groups()[0]
+                else:
+                    self.logger.error('============>')
+                    self.logger.error('Parse no user token')
 
             collection_item = CollectionItem()
             collection_item['id'] = self.collection_id
@@ -119,9 +121,12 @@ class CollectionSpider(Spider):
                 yield Request(next_page_url, callback=self.parse)
 
     def parse_answer(self, response):
-        question_id, answer_id = re.search('question/(\d{8})/answer/(\d{8})', response.url).groups()
+        question_id, answer_id = re.search('question/(\d{8,})/answer/(\d{8,})', response.url).groups()
         answer_div = response.css('div#zh-question-answer-wrap')
-        answer_summary = answer_div.css('div.zh-summary.summary').re_first('<div.*?>([\S\s]+)\s*?<a.*?>.*<\/a>\s*<\/div>')
+        answer_summary_element = answer_div.css('div.zh-summary.summary')
+        answer_summary = answer_summary_element.re_first('<div.*?>([\S\s]+)\s*?<a.*?>.*<\/a>\s*<\/div>')
+        if not answer_summary:
+            answer_summary = answer_summary_element.re_first('<div.*?>([\S\s]+)<\/div>')
         answer_content = answer_div.css('div.zm-editable-content').re_first('<div.*?>([\S\s]+)<\/div>')
         answer_vote_up = answer_div.css('div.zm-votebar button.up span.count::text').extract_first().replace('K',
                                                                                                              '000').replace(
@@ -157,7 +162,7 @@ class CollectionSpider(Spider):
         yield collection_answer_item
 
     def parse_question(self, response):
-        question_id = re.search('question/(\d{8})', response.url).groups()[0]
+        question_id = re.search('question/(\d{8,})', response.url).groups()[0]
         question_title = response.css('div#zh-question-title h2.zm-item-title.zm-editable-content').re_first(
             '<h2.*?>([\S\s]+)<\/h2>').replace("\n", "")
         question_content = response.css('div#zh-question-detail div.zm-editable-content').re_first(
