@@ -93,7 +93,7 @@ class CollectionSpider(Spider):
 
             if question_url_str:
                 question_url = response.urljoin(question_url_str)
-                self.logger.info(question_url)
+
                 yield Request(question_url,
                               # meta={'cookiejar': response.meta['cookiejar']},
                               callback=self.parse_question)
@@ -121,7 +121,16 @@ class CollectionSpider(Spider):
                 yield Request(next_page_url, callback=self.parse)
 
     def parse_answer(self, response):
-        question_id, answer_id = re.search('question/(\d{8,})/answer/(\d{8,})', response.url).groups()
+        # 有些答案在未登录情况下不可看
+        # https://www.zhihu.com/?next=%2Fquestion%2F23228934%2Fanswer%2F33793982
+        m = re.search('question/(\d{8,})/answer/(\d{8,})', response.url)
+        
+        if not m:
+            self.logger.error('=============>')
+            self.logger.error(response.url)
+            return
+
+        question_id, answer_id = m.groups()
         answer_div = response.css('div#zh-question-answer-wrap')
         answer_summary_element = answer_div.css('div.zh-summary.summary')
         answer_summary = answer_summary_element.re_first('<div.*?>([\S\s]+)\s*?<a.*?>.*<\/a>\s*<\/div>')
@@ -169,8 +178,13 @@ class CollectionSpider(Spider):
             '<div.*?>([\S\s]+)<\/div>')
         question_following_count_str = response.css('div#zh-question-side-header-wrap::text').extract()
         question_following_count = question_following_count_str[1].strip().split('\n')[0].replace(',', '')
-        question_review_count = response.css('a.toggle-comment[name*=addcomment]::text').re_first('([0-9,]+)').replace(
-            ',', '')
+        question_review_count = response.css('a.toggle-comment[name*=addcomment]::text').re_first('([0-9,]+)')
+        
+        if not question_review_count:
+            question_review_count = 0
+        else:
+            question_review_count = question_review_count.replace(',', '')
+
         question_answer_count = response.css('h3#zh-question-answer-num::attr(data-num)').extract_first()
         question_is_top = response.css(
             'div.zu-main-content meta[itemprop*=isTopQuestion]::attr(content)').extract_first()

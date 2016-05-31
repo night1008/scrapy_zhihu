@@ -35,7 +35,6 @@ class ZhihuPipeline(object):
         if isinstance(item, QuestionItem):
             session = Session()
             question = session.query(Question).filter_by(id=item['id']).first()
-            spider.logger.error(question)
             if not question:
                 question = Question(**dict(item))
                 session.add(question)

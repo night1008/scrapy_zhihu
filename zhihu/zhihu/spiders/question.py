@@ -21,7 +21,13 @@ class QuestionSpider(Spider):
         question_content = response.css('div#zh-question-detail div.zm-editable-content').re_first('<div.*?>([\S\s]+)<\/div>')
         question_following_count_str = response.css('div#zh-question-side-header-wrap::text').extract()
         question_following_count = question_following_count_str[1].strip().split('\n')[0].replace(',', '')
-        question_review_count = response.css('a.toggle-comment[name*=addcomment]::text').re_first('([0-9,]+)').replace(',', '')
+        question_review_count = response.css('a.toggle-comment[name*=addcomment]::text').re_first('([0-9,]+)')
+
+        if not question_review_count:
+            question_review_count = 0
+        else:
+            question_review_count = question_review_count.replace(',', '')
+
         question_answer_count = response.css('h3#zh-question-answer-num::attr(data-num)').extract_first()
         question_is_top = response.css('div.zu-main-content meta[itemprop*=isTopQuestion]::attr(content)').extract_first()
         question_visit_count = response.css('div.zu-main-content meta[itemprop*=visitsCount]::attr(content)').extract_first()
@@ -72,12 +78,14 @@ class QuestionSpider(Spider):
                     self.logger.warning('可能涉及违反法律法规的内容')
         
     def parse_answer(self, response):
-        self.logger.info('parse_answer')
-        self.logger.info(response.url)
-        # with open('answer_res.html', 'wb') as f:
-        #     f.write(response.body)
-        # return
-        question_id, answer_id = re.search('question/(\d{8})/answer/(\d{8})', response.url).groups()
+        
+        m = re.search('question/(\d{8,})/answer/(\d{8,})', response.url)
+        
+        if not m:
+            self.logger.error('=============>')
+            self.logger.error(response.url)
+            return
+            
         answer_div = response.css('div#zh-question-answer-wrap')        
         answer_content = answer_div.css('div.zm-editable-content').re_first('<div.*?>([\S\s]+)<\/div>')
         answer_vote_up = answer_div.css('div.zm-votebar button.up span.count::text').extract_first()
