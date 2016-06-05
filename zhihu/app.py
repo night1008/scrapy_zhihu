@@ -33,9 +33,11 @@ def get_pagination(total, limit, current_page):
         'page_range': page_range,
     }
 
+
 @app.route("/")
 def hello():
     return render_template('layout.html')
+
 
 @app.route("/answer")
 def answer():
@@ -43,42 +45,35 @@ def answer():
     page = request.args.get('page', 1, int)
     session = Session()
     offset = (page - 1) * LIMIT
-    print '=============>'
-    print offset
     answers_query = session.query(Answer.id,
                                 Answer.question_id,
                                 Answer.user_token,
                                 Answer.vote_up,
                                 Answer.summary,
-                                Question.title
+                                Question.title.label('question_title')
                             ).filter(Answer.question_id == Question.id) \
                             .order_by(Answer.vote_up.desc())
 
     answers = answers_query.offset(offset).limit(LIMIT)
-    print answers_query.count()
-    print answers.count()
-    print answers[0]
     pagination = get_pagination(answers_query.count(), LIMIT, page)
 
     return render_template('answer/index.html', answers=answers, pagination=pagination)
 
+
 @app.route("/answer/<answer_id>")
 def answer_detail(answer_id):
     session = Session()
-    # answer = session.query(Answer).first()
     answer = session.query(Answer.id,
                         Answer.vote_up,
                         Answer.content,
                         Answer.question_id,
-                         Question.title
+                        Question.title.label('question_title')
                         ).filter(Answer.question_id == Question.id) \
                         .filter_by(id=answer_id).first()
-    print answer.id
     if not answer:
         abort(404)
     return render_template('answer/detail.html', answer=answer)
 
-# return jsonify(result)
 
 @app.route("/question")
 def question():
@@ -101,17 +96,56 @@ def question():
     return render_template('question/index.html', questions=questions, pagination=pagination)
 
 
+@app.route("/question/<question_id>")
+def question_detail(question_id):
+    page = request.args.get('page', 1, int)
+    session = Session()
+    offset = (page - 1) * LIMIT
+    
+    question = session.query(Question.id,
+                                Question.title,
+                                Question.content,
+                            ) \
+                            .filter_by(id=question_id).first()
+                            
+    if not question:
+        abort(404)
+
+    answers_query = session.query(Answer.id,
+                                Answer.question_id,
+                                Answer.user_token,
+                                Answer.vote_up,
+                                Answer.summary,
+                            ).filter(Answer.question_id == question_id) \
+                            .order_by(Answer.vote_up.desc())
+    
+    answers = answers_query.offset(offset).limit(LIMIT)
+
+    pagination = get_pagination(answers_query.count(), LIMIT, page)
+
+    return render_template('question/detail.html', question=question, answers=answers, pagination=pagination)
+
+
 @app.route("/collection")
 def collection():
+    page = request.args.get('page', 1, int)
     session = Session()
-    # answer = session.query(Answer).first()
-    collections = session.query(Collection).order_by(Collection.created_at).all()
-    return render_template('collection.html', collections=collections)
+    offset = (page - 1) * LIMIT
+    
+    collections_query = session.query(Collection) \
+                            .order_by(Collection.review_count.desc())
 
-@app.route('/collection/<collection_id>/answer')
-def collection_answer(collection_id):
+    collections = collections_query.offset(offset).limit(LIMIT)
+    
+    pagination = get_pagination(collections_query.count(), LIMIT, page)
+
+    return render_template('collection/index.html', collections=collections, pagination=pagination)
+
+
+@app.route('/collection/<collection_id>')
+def collection_detail(collection_id):
     """
-    SELECT a.id, a.user_token,a.question_id, a.vote_up,left(a.content, 100) as summary,
+    SELECT a.id, a.user_token,a.question_id, a.vote_up, a.summary,
     a.review_count, a.published_at,a.edited_at,q.title AS question_title
     FROM answer as a, question as q WHERE a.question_id = q.id AND a.id IN
     (SELECT answer_id FROM collection_answer WHERE collection_id = '25185328');
@@ -120,6 +154,7 @@ def collection_answer(collection_id):
     # answer = session.query(Answer).first()
     answers = session.query(Collection).order_by(Collection.created_at).all()
     return render_template('question.html', answers=answers)
+
 
 @app.route("/invoke")
 def invoke():

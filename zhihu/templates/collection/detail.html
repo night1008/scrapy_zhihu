@@ -1,27 +1,16 @@
 {% extends "layout.html" %}
 {% block title %}
-	回答
+	收藏
 {% endblock %}
 
 {% block content %}
 	<div class="row">
-		<div class="col-md-12">
-			<div class="page-header">
-			 	<h3><strong>{{ question.title }}</strong></h3>
-			 	<small class="text-muted">
-			 		{% if question.content %}
-  						{{ question.content | safe }}
-  					{% else %}
-    					<span class="text-muted">暂无描述</span>
-    				{% endif %}
-	    		</small>
-			</div>
-		</div>		
-	</div>
-	<div class="row">
 		{% for answer in answers %}
 			<div class="col-md-12">
 				<div class="panel panel-primary">
+					<div class="panel-heading">
+					    <h3 class="panel-title">{{ answer.question_title }}</h3>
+					</div>
 	  				<div class="panel-body">
 	  					<span><a href="https://www.zhihu.com/people/{{ answer.user_token }}" target="_blank">{{ answer.user_token }}</a></span>
                         <label class="label label-primary pull-right"><i class="glyphicon glyphicon-arrow-up"></i> {{ answer.vote_up }}</label>
