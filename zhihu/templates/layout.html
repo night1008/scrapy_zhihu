@@ -34,14 +34,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">知乎</a>
+          <a class="navbar-brand" href="/">知乎</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="/collection">收藏</a></li>
-            <li><a href="/question">问题</a></li>
-            <li><a href="/answer">回答</a></li>
-            <li><a href="/user">用户</a></li>            
+            <li class="{% if request.path == url_for('collection') %} active {% endif %}"><a href="/collection">收藏</a></li>
+            <li class="{% if request.path == url_for('question') %} active {% endif %}"><a href="/question">问题</a></li>
+            <li class="{% if request.path == url_for('answer') %} active {% endif %}"><a href="/answer">回答</a></li>
+            <li class="{% if request.path == url_for('user') %} active {% endif %}"><a href="/user">用户</a></li>            
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="../navbar/">Default</a></li>

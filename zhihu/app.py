@@ -7,7 +7,7 @@ from flask import render_template
 from sqlalchemy import func
 
 import zhihu
-from zhihu.models import Answer, Session, Question, Collection
+from zhihu.models import Answer, Session, Question, Collection, CollectionAnswer
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
@@ -35,8 +35,8 @@ def get_pagination(total, limit, current_page):
 
 
 @app.route("/")
-def hello():
-    return render_template('layout.html')
+def index():
+    return render_template('index.html')
 
 
 @app.route("/answer")
@@ -150,11 +150,42 @@ def collection_detail(collection_id):
     FROM answer as a, question as q WHERE a.question_id = q.id AND a.id IN
     (SELECT answer_id FROM collection_answer WHERE collection_id = '25185328');
     """
+    page = request.args.get('page', 1, int)
     session = Session()
-    # answer = session.query(Answer).first()
-    answers = session.query(Collection).order_by(Collection.created_at).all()
-    return render_template('question.html', answers=answers)
+    offset = (page - 1) * LIMIT
 
+    collection = session.query(Collection) \
+                            .filter_by(id=collection_id).first()
+                            
+    if not collection:
+        abort(404)
+    
+    collection_answers_query = session.query(CollectionAnswer) \
+                                        .filter_by(collection_id=collection_id)
+    
+    collection_answers = collection_answers_query.offset(offset).limit(LIMIT)
+
+    answers = []
+    for collection_answer in collection_answers:
+        answer = session.query(Answer.id,
+                        Answer.user_token,
+                        Answer.vote_up,
+                        Answer.summary,
+                        Answer.question_id,
+                        Question.title.label('question_title')
+                        ).filter(Answer.question_id == Question.id) \
+                        .filter_by(id=collection_answer.answer_id).first()
+        if answer:
+            answers.append(answer)
+
+    pagination = get_pagination(collection_answers_query.count(), LIMIT, page)
+
+    return render_template('collection/detail.html', collection=collection, answers=answers, pagination=pagination)
+
+
+@app.route("/user")
+def user():
+    return 'user'
 
 @app.route("/invoke")
 def invoke():

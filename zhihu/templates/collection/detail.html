@@ -5,6 +5,20 @@
 
 {% block content %}
 	<div class="row">
+		<div class="col-md-12">
+			<div class="page-header">
+			 	<h3><strong>{{ collection.title }}</strong></h3>
+			 	<small class="text-muted">
+			 		{% if collection.description %}
+  						{{ collection.description | safe }}
+  					{% else %}
+    					<span class="text-muted">暂无描述</span>
+    				{% endif %}
+	    		</small>
+			</div>
+		</div>		
+	</div>
+	<div class="row">
 		{% for answer in answers %}
 			<div class="col-md-12">
 				<div class="panel panel-primary">
