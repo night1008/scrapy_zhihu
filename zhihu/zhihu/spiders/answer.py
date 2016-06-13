@@ -25,6 +25,8 @@ class AnswerSpider(Spider):
             self.logger.error('=============>')
             self.logger.error(response.url)
             return
+
+        self.answer_id = m.groups()[1]
             
         question_url_str = response.css('h2.zm-item-title a::attr("href")').extract_first()
         if question_url_str:
@@ -52,7 +54,7 @@ class AnswerSpider(Spider):
             answer_edited_at = get_date(answer_edited_at_str)
 
         answer_item = AnswerItem()
-        answer_item['id'] = answer_id
+        answer_item['id'] = self.answer_id
         answer_item['user_token'] = answer_user_token
         answer_item['question_id'] = question_id
         answer_item['summary'] = answer_summary

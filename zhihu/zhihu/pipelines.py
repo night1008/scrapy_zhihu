@@ -8,7 +8,6 @@ from datetime import datetime
 from zhihu.items import AnswerItem, QuestionItem, UserItem, CollectionAnswerItem, CollectionItem
 from models import Session, Answer, Question, User, CollectionAnswer, Collection
 
-
 class ZhihuPipeline(object):
     def process_item(self, item, spider):
         if isinstance(item, AnswerItem):

@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}
+	问题
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+		{% for question in questions %}
+			<div class="col-md-12">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+					    <h3 class="panel-title">{{ question.title }}</h3>
+					</div>
+	  				<div class="panel-body">
+	  					{% if question.content %}
+	  						{{ question.content | safe }}
+	  					{% else %}
+	    					<span class="text-muted">暂无描述</span>
+	    				{% endif %}
+	    				<br>
+	    				<a href="/question/{{ question.id }}" target="_blank">查看详情</a> &nbsp;&nbsp;
+	    				<a href="https://www.zhihu.com/question/{{ question.id }}" target="_blank">查看原链接</a>
+	 				</div>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+	{% include 'pagination.html' %}
+{% endblock %}
