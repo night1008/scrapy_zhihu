@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block title %}
+	回答 - {{ answer.id }}
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+				    <h3 class="panel-title">{{ answer.question_title }}</h3>
+				</div>
+  				<div class="panel-body">
+  					
+                    <label class="label label-primary pull-right"><i class="glyphicon glyphicon-arrow-up"></i> {{ answer.vote_up }}</label>
+                    <br>
+    				{{ answer.content | safe }}
+    				<br>
+    				<a href="https://www.zhihu.com/question/{{ answer.question_id }}/answer/{{ answer.id }}" target="_blank">查看原链接</a>
+ 				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

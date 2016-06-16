@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block title %}
+	任务
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-offset-4 col-md-4">
+			<form>
+		        <h2>请输入知乎地址</h2>
+		        <div class="form-group">
+			        <input type="text" class="form-control" placeholder="知乎地址" required autofocus>
+			  	</div>
+		        <button class="btn btn-primary btn-block" type="submit">抓取</button>
+      		</form>
+      	</div>
+	</div>
+{% endblock %}
