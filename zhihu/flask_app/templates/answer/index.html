@@ -13,7 +13,7 @@
 					</div>
 	  				<div class="panel-body">
 	  					<span><a href="https://www.zhihu.com/people/{{ answer.user_token }}" target="_blank">{{ answer.user_token }}</a></span>
-                        <label class="label label-primary pull-right"><i class="glyphicon glyphicon-arrow-up"></i> {{ answer.vote_up }}</label>
+                        <label class="label label-primary pull-right"><i class="glyphicon glyphicon-thumbs-up"></i> {{ answer.vote_up }}</label>
                         <br>
 	    				{{ answer.summary | safe }}
 	    				{% if answer.summary | length >= 200 %}

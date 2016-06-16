@@ -23,8 +23,7 @@
   </head>
 
   <body role="document">
-
-    <!-- Fixed navbar -->
+  	<!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -37,14 +36,9 @@
           <a class="navbar-brand" href="/">知乎</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="{% if request.path == url_for('collection') %} active {% endif %}"><a href="/collection">收藏</a></li>
-            <li class="{% if request.path == url_for('question') %} active {% endif %}"><a href="/question">问题</a></li>
-            <li class="{% if request.path == url_for('answer') %} active {% endif %}"><a href="/answer">回答</a></li>
-            <li class="{% if request.path == url_for('user') %} active {% endif %}"><a href="/user">用户</a></li>            
-          </ul>
+          
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="../navbar/">Default</a></li>
+            <li><a href="/login">登录</a></li>
             <li><a href="../navbar-static-top/">Static top</a></li>
             <li class="active"><a href="./">Fixed top <span class="sr-only">(current)</span></a></li>
           </ul>
@@ -53,8 +47,7 @@
     </nav>
 
     <div class="container" role="main">
-        {% block content %}
-        {% endblock %}
+        <h1 class="text-center">404</h1>
     </div> <!-- /container -->
 
 

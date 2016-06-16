@@ -32,13 +32,21 @@ def get_pagination(total, limit, current_page):
         'page_range': page_range,
     }
 
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('404.html'), 404
 
 @app.route("/")
 def index():
     return render_template('index.html')
 
-@app.route("/task")
+@app.route("/task", methods=['GET', 'POST'])
 def task():
+    if request.method == 'GET':
+        return render_template('task.html')
+
+    url = request.form.get('url')
+    
     return render_template('task.html')
 
 @app.route("/login", methods=['GET', 'POST'])
