@@ -26,7 +26,7 @@ class AnswerSpider(Spider):
             self.logger.error(response.url)
             return
 
-        self.answer_id = m.groups()[1]
+        self.question_id, self.answer_id = m.groups()
             
         question_url_str = response.css('h2.zm-item-title a::attr("href")').extract_first()
         if question_url_str:
@@ -56,10 +56,9 @@ class AnswerSpider(Spider):
         answer_item = AnswerItem()
         answer_item['id'] = self.answer_id
         answer_item['user_token'] = answer_user_token
-        answer_item['question_id'] = question_id
+        answer_item['question_id'] = self.question_id
         answer_item['summary'] = answer_summary
         answer_item['content'] = answer_content
-        answer_item['content_length'] = len(answer_content) if answer_content else 0
         answer_item['vote_up'] = answer_vote_up
         answer_item['vote_down'] = None
         answer_item['published_at'] = answer_published_at

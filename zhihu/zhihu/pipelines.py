@@ -52,7 +52,7 @@ class ZhihuPipeline(object):
         if isinstance(item, AuthorItem):
             session = Session()
             author = session.query(Author).filter_by(token=item['token']).first()
-            if not user:
+            if not author:
                 author = Author(**dict(item))
                 session.add(author)
             elif author.is_need_update():
