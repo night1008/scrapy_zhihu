@@ -203,9 +203,9 @@ def collection_detail(collection_id):
     return render_template('collection/detail.html', collection=collection, answers=answers, pagination=pagination)
 
 
-@app.route("/user")
-def user():
-    return 'user'
+@app.route("/author")
+def author():
+    return 'author'
 
 @app.route("/invoke")
 def invoke():

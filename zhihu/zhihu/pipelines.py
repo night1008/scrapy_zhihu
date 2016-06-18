@@ -5,8 +5,8 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 from datetime import datetime
-from zhihu.items import AnswerItem, QuestionItem, UserItem, CollectionAnswerItem, CollectionItem
-from models import Session, Answer, Question, User, CollectionAnswer, Collection
+from zhihu.items import AnswerItem, QuestionItem, AuthorItem, CollectionAnswerItem, CollectionItem
+from models import Session, Answer, Question, Author, CollectionAnswer, Collection
 
 class ZhihuPipeline(object):
     def process_item(self, item, spider):
@@ -49,34 +49,34 @@ class ZhihuPipeline(object):
             session.commit()
             session.close()
 
-        if isinstance(item, UserItem):
+        if isinstance(item, AuthorItem):
             session = Session()
-            user = session.query(User).filter_by(token=item['token']).first()
+            author = session.query(Author).filter_by(token=item['token']).first()
             if not user:
-                user = User(**dict(item))
-                session.add(user)
-            elif user.is_need_update():
-                user.name = item['name']
-                user.biography = item['biography']
-                user.pic_url = item['pic_url']
-                user.description = item['description']
-                user.location = item['location']
-                user.visit_count = item['visit_count']
-                user.business = item['business']
-                user.gender = item['gender']
-                user.employment = item['employment']
-                user.education = item['education']
-                user.follower_count = item['follower_count']
-                user.followee_count = item['followee_count']
-                user.thank_count = item['thank_count']
-                user.aggre_count = item['aggre_count']
-                user.question_count = item['question_count']
-                user.answer_count = item['answer_count']
-                user.post_count = item['post_count']
-                user.collection_count = item['collection_count']
-                user.log_count = item['log_count']
-                user.visit_count = item['visit_count']
-                user.updated_at = datetime.now()
+                author = Author(**dict(item))
+                session.add(author)
+            elif author.is_need_update():
+                author.name = item['name']
+                author.biography = item['biography']
+                author.pic_url = item['pic_url']
+                author.description = item['description']
+                author.location = item['location']
+                author.visit_count = item['visit_count']
+                author.business = item['business']
+                author.gender = item['gender']
+                author.employment = item['employment']
+                author.education = item['education']
+                author.follower_count = item['follower_count']
+                author.followee_count = item['followee_count']
+                author.thank_count = item['thank_count']
+                author.aggre_count = item['aggre_count']
+                author.question_count = item['question_count']
+                author.answer_count = item['answer_count']
+                author.post_count = item['post_count']
+                author.collection_count = item['collection_count']
+                author.log_count = item['log_count']
+                author.visit_count = item['visit_count']
+                author.updated_at = datetime.now()
             session.commit()
             session.close()
 

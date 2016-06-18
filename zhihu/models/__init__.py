@@ -91,8 +91,8 @@ class Task(Base):
         return "<Task(name='%s')>" % (self.name)
 
 
-class User(Base):
-    __tablename__ = 'user'
+class Author(Base):
+    __tablename__ = 'author'
     UPDATED_DAY = 10
 
     id = Column(Integer, primary_key=True)
@@ -123,7 +123,7 @@ class User(Base):
         return self.updated_at + timedelta(days=self.UPDATED_DAY) > datetime.now()
 
     def __repr__(self):
-        return "<User(name='%s')>" % (self.name)
+        return "<Author(name='%s')>" % (self.name)
 
 
 class CollectionAnswer(Base):
@@ -140,7 +140,7 @@ class CollectionAnswer(Base):
                (self.collection_id, self.answer_id)
 
 # memo: 未登录下得不到
-class UserFollower(Base):
+class AuthorFollower(Base):
     __tablename__ = 'user_follower'
 
     id = Column(Integer, primary_key=True)
@@ -150,7 +150,7 @@ class UserFollower(Base):
     updated_at = Column(DateTime, default=datetime.now)
 
 
-class UserFollowee(Base):
+class AuthorFollowee(Base):
     __tablename__ = 'user_followee'
 
     id = Column(Integer, primary_key=True)
@@ -159,13 +159,12 @@ class UserFollowee(Base):
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now)
 
-    # class User(Base):
-    # 	__tablename__ = 'user'
+class User(Base):
+	__tablename__ = 'user'
 
-    # 	id = Column(Integer, primary_key=True)
-    # 	name = Column(String)
-    # 	email = Column(String)
-    # 	password = Column(String)
-    # 	last_login_at = Column(DateTime)
-    # 	created_at = Column(DateTime, default=datetime.now)
-    # 	updated_at = Column(DateTime, default=datetime.now)
+	id = Column(Integer, primary_key=True)
+	name = Column(String)
+	email = Column(String)
+	password = Column(String)
+	created_at = Column(DateTime, default=datetime.now)
+	updated_at = Column(DateTime, default=datetime.now)

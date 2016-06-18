@@ -37,7 +37,7 @@ class QuestionItem(scrapy.Item):
     visit_count = scrapy.Field()
     is_top = scrapy.Field()
 
-class UserItem(scrapy.Item):
+class AuthorItem(scrapy.Item):
     token = scrapy.Field()
     gender = scrapy.Field()
     pic_url = scrapy.Field()
