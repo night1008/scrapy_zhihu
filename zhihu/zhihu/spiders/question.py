@@ -1,7 +1,10 @@
 #coding: utf-8
 from scrapy import Spider, Request
 import re
-from zhihu.items import AnswerItem
+
+from zhihu.items import AnswerItem, QuestionItem
+from zhihu.utils import get_date
+
 
 class QuestionSpider(Spider):
     """
@@ -16,8 +19,16 @@ class QuestionSpider(Spider):
     start_urls = ['https://www.zhihu.com/question/40170848']
 
     def parse(self, response):
+        m = re.search('question/(\d{8,})', response.url)
         
-        question_title = response.css('div#zh-question-title h2.zm-item-title.zm-editable-content').re_first('<h2.*?>([\S\s]+)<\/h2>')
+        if not m:
+            self.logger.error('=============>')
+            self.logger.error(response.url)
+            return
+
+        self.question_id = m.groups()[0]
+
+        question_title = response.css('div#zh-question-title h2.zm-item-title.zm-editable-content').re_first('<h2.*?>([\S\s]+)<\/h2>').replace("\n", "")
         question_content = response.css('div#zh-question-detail div.zm-editable-content').re_first('<div.*?>([\S\s]+)<\/div>')
         question_following_count_str = response.css('div#zh-question-side-header-wrap::text').extract()
         question_following_count = question_following_count_str[1].strip().split('\n')[0].replace(',', '')
@@ -27,50 +38,37 @@ class QuestionSpider(Spider):
             question_review_count = 0
         else:
             question_review_count = question_review_count.replace(',', '')
-
+            
         question_answer_count = response.css('h3#zh-question-answer-num::attr(data-num)').extract_first()
         question_is_top = response.css('div.zu-main-content meta[itemprop*=isTopQuestion]::attr(content)').extract_first()
         question_visit_count = response.css('div.zu-main-content meta[itemprop*=visitsCount]::attr(content)').extract_first()
 
-        # question_topic_ids = 
-        
-        question_item = {
-            'title': question_title,
-            'content': question_content,
-            'following_count': question_following_count,
-            'review_count': question_review_count,
-            'answer_count': question_answer_count,
-            'is_top': question_is_top,
-            'visit_ount': question_visit_count,
-        }
+        question_item = QuestionItem()
+        question_item['id'] = self.question_id
+        question_item['user_token'] = None
+        question_item['title'] = question_title
+        question_item['content'] = question_content
+        question_item['following_count'] = question_following_count
+        question_item['review_count'] = question_review_count
+        question_item['answer_count'] = question_answer_count
+        question_item['is_top'] = question_is_top == 'true'
+        question_item['visit_count'] = question_visit_count
 
         yield question_item
-        return
 
-        answer_divs = response.css('div#zh-list-answer-wrap div.zm-item')
-        # with open('res.html', 'wb') as f:
-        #     f.write(response.body)
-
-        self.logger.info(len(answer_divs))
+        answer_divs = response.css('div#zh-question-answer-wrap div.zm-item-answer')
 
         for index, answer_div in enumerate(answer_divs):
-            # @todo:问题
-            question_url_str = answer_div.css('h2.zm-item-title a::attr("href")').extract_first()
-            answer_url_str = answer_div.css('div.zm-item-answer div.zm-item-rich-text::attr("data-entry-url")').extract_first()
-            self.logger.info('============' + str(index))
-
-            if question_url_str:
-                question_url = response.urljoin(question_url_str)
-                self.logger.info(question_url)
-                yield Request(question_url, 
-                    # meta={'cookiejar': response.meta['cookiejar']},
-                    callback=self.parse_question)
+            answer_url_str = answer_div.css('link[itemprop*=url]::attr(href)').extract_first()
 
             if answer_url_str:
                 answer_url = response.urljoin(answer_url_str)
-                self.logger.info(answer_url)
+                answer_review_count = answer_div.css('a.toggle-comment[name*=addcomment]::text').re_first('(\d+)')
+                if not answer_review_count:
+                    answer_review_count = 0
+                    
                 yield Request(answer_url, 
-                    # meta={'cookiejar': response.meta['cookiejar']},
+                    meta={'review_count': answer_review_count},
                     callback=self.parse_answer)
             else:
                 answer_status_divs = answer_div.css('div.answer-status')
@@ -78,23 +76,44 @@ class QuestionSpider(Spider):
                     self.logger.warning('可能涉及违反法律法规的内容')
         
     def parse_answer(self, response):
-        
         m = re.search('question/(\d{8,})/answer/(\d{8,})', response.url)
         
         if not m:
             self.logger.error('=============>')
             self.logger.error(response.url)
             return
-            
-        answer_div = response.css('div#zh-question-answer-wrap')        
+
+        question_id, answer_id = m.groups()
+        answer_div = response.css('div#zh-question-answer-wrap')
+        answer_summary_element = answer_div.css('div.zh-summary.summary')
+        answer_summary = answer_summary_element.re_first('<div.*?>([\S\s]+)\s*?<a.*?>.*<\/a>\s*<\/div>')
+        if not answer_summary:
+            answer_summary = answer_summary_element.re_first('<div.*?>([\S\s]+)<\/div>')
         answer_content = answer_div.css('div.zm-editable-content').re_first('<div.*?>([\S\s]+)<\/div>')
-        answer_vote_up = answer_div.css('div.zm-votebar button.up span.count::text').extract_first()
+        answer_vote_up = answer_div.css('div.zm-votebar button.up span.count::text').extract_first().replace('K',
+                                                                                                             '000').replace(
+            'W', '0000')
+        answer_user_token = answer_div.css('a.author-link::attr(href)').re_first('\/people\/(.*)')
+        answer_published_at_str = answer_div.css('a.answer-date-link::attr(data-tip)').extract_first()
+        answer_edited_at = None
+        # s$t$发布于 昨天 08:03 编辑于 昨天 11:55
+        if not answer_published_at_str:
+            answer_published_at_str = answer_div.css('a.answer-date-link::text').extract_first()
+            answer_published_at = get_date(answer_published_at_str)
+        else:
+            answer_published_at = get_date(answer_published_at_str)
+            answer_edited_at_str = answer_div.css('a.answer-date-link::text').extract_first()
+            answer_edited_at = get_date(answer_edited_at_str)
 
         answer_item = AnswerItem()
         answer_item['id'] = answer_id
+        answer_item['user_token'] = answer_user_token
         answer_item['question_id'] = question_id
+        answer_item['summary'] = answer_summary
         answer_item['content'] = answer_content
         answer_item['vote_up'] = answer_vote_up
         answer_item['vote_down'] = None
-
+        answer_item['review_count'] = response.meta.get('review_count')
+        answer_item['published_at'] = answer_published_at
+        answer_item['edited_at'] = answer_edited_at
         yield answer_item
