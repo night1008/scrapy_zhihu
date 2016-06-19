@@ -1,18 +1,43 @@
 # coding: utf-8
 import math
 from flask import Flask
-from flask import json, jsonify, abort, request
+from flask import json, jsonify, abort, request, flash, session, g
 from flask import render_template
 
 from sqlalchemy import func
 
-from models import Answer, Session, Question, Collection, CollectionAnswer
+from models import Answer, Session, Question, Collection, CollectionAnswer, Author
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
 app = Flask(__name__)
-app.debug = True
+app.config.from_object(__name__)
+app.config.update(dict(
+    SECRET_KEY='development key',
+    USERNAME='admin',
+    PASSWORD='default',
+    DEBUG=True,
+))
+
 LIMIT = 10
+
+def get_session():
+    if not hasattr(g, 'session'):
+        g.session = Session()
+    return g.session
+
+
+@app.teardown_appcontext
+def close_session(error):
+    if hasattr(g, 'session'):
+        g.session.close()
+
+
+# @app.cli.command('test_app_command')
+# def test_app_command():
+#     """Initializes the database."""
+#     print 'Test App Command'
+
 
 def get_pagination(total, limit, current_page):
     last_page = int(math.ceil(total / limit))
@@ -63,7 +88,7 @@ def login():
 def answer():
     # @todo: 换页检测
     page = request.args.get('page', 1, int)
-    session = Session()
+    session = get_session()
     offset = (page - 1) * LIMIT
     answers_query = session.query(Answer.id,
                                 Answer.question_id,
@@ -77,12 +102,14 @@ def answer():
     answers = answers_query.offset(offset).limit(LIMIT)
     pagination = get_pagination(answers_query.count(), LIMIT, page)
 
+    flash('New entry was successfully posted')
+
     return render_template('answer/index.html', answers=answers, pagination=pagination)
 
 
 @app.route("/answer/<answer_id>")
 def answer_detail(answer_id):
-    session = Session()
+    session = get_session()
     answer = session.query(Answer.id,
                         Answer.vote_up,
                         Answer.content,
@@ -98,7 +125,7 @@ def answer_detail(answer_id):
 @app.route("/question")
 def question():
     page = request.args.get('page', 1, int)
-    session = Session()
+    session = get_session()
     offset = (page - 1) * LIMIT
     
     questions_query = session.query(Question.id,
@@ -119,7 +146,7 @@ def question():
 @app.route("/question/<question_id>")
 def question_detail(question_id):
     page = request.args.get('page', 1, int)
-    session = Session()
+    session = get_session()
     offset = (page - 1) * LIMIT
     
     question = session.query(Question.id,
@@ -149,7 +176,7 @@ def question_detail(question_id):
 @app.route("/collection")
 def collection():
     page = request.args.get('page', 1, int)
-    session = Session()
+    session = get_session()
     offset = (page - 1) * LIMIT
     
     collections_query = session.query(Collection) \
@@ -171,7 +198,7 @@ def collection_detail(collection_id):
     (SELECT answer_id FROM collection_answer WHERE collection_id = '25185328');
     """
     page = request.args.get('page', 1, int)
-    session = Session()
+    session = get_session()
     offset = (page - 1) * LIMIT
 
     collection = session.query(Collection) \
@@ -205,7 +232,23 @@ def collection_detail(collection_id):
 
 @app.route("/author")
 def author():
-    return 'author'
+    page = request.args.get('page', 1, int)
+    session = get_session()
+    offset = (page - 1) * LIMIT
+    
+    authors_query = session.query(Author) \
+                            .order_by(Author.id.desc())
+
+    authors = authors_query.offset(offset).limit(LIMIT)
+    
+    pagination = get_pagination(authors_query.count(), LIMIT, page)
+
+    return render_template('author/index.html', authors=authors, pagination=pagination)
+
+
+@app.route("/author/<author_token>")
+def author_detail():
+    return 'author detail'
 
 @app.route("/invoke")
 def invoke():

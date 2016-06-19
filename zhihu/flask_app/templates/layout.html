@@ -41,10 +41,14 @@
             <li class="{% if request.path == url_for('collection') %} active {% endif %}"><a href="/collection">收藏</a></li>
             <li class="{% if request.path == url_for('question') %} active {% endif %}"><a href="/question">问题</a></li>
             <li class="{% if request.path == url_for('answer') %} active {% endif %}"><a href="/answer">回答</a></li>
-            <li class="{% if request.path == url_for('user') %} active {% endif %}"><a href="/user">用户</a></li>            
+            <li class="{% if request.path == url_for('author') %} active {% endif %}"><a href="/author">用户</a></li>            
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li class="{% if request.path == url_for('login') %} active {% endif %}"><a href="/login">登录</a></li>
+            {% if not session.logged_in %}
+              <li class="{% if request.path == url_for('login') %} active {% endif %}"><a href="/login">登录</a></li>
+            {% else %}
+              <li class="{% if request.path == url_for('login') %} active {% endif %}"><a href="/login">已登录</a></li>
+            {% endif %}            
             <li><a href="../navbar-static-top/">Static top</a></li>
             <li class=""><a href="./">Fixed top <span class="sr-only">(current)</span></a></li>
           </ul>
