@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}
+	用户
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+		{% for author in authors %}
+			<div class="col-md-12">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+					    <h3 class="panel-title">{{ author.token }}</h3>
+					</div>
+	  				<div class="panel-body">
+	  					<span><a href="https://www.zhihu.com/people/{{ author.token }}" target="_blank">{{ author.token }}</a></span>
+                        <label class="label label-primary pull-right"><i class="glyphicon glyphicon-thumbs-up"></i> {{ author.aggre_count }}</label>
+                        <br>
+	    				{{ author.description | safe }}
+	    				<br>
+	 				</div>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+	{% include 'pagination.html' %}
+{% endblock %}

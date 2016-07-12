@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block title %}
+	用户详情
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+				    <h3 class="panel-title">{{ author.token }}</h3>
+				</div>
+  				<div class="panel-body">
+  					<span><a href="https://www.zhihu.com/people/{{ author.token }}" target="_blank">{{ author.token }}</a></span>
+                    <label class="label label-primary pull-right"><i class="glyphicon glyphicon-thumbs-up"></i> {{ author.aggre_count }}</label>
+                    <br>
+    				{{ author.description | safe }}
+    				<br>
+ 				</div>
+ 				<div class="panel-footer text-center">
+ 					<div class="btn-group" role="group" aria-label="...">
+					  	<a href="https://www.zhihu.com/people/{{ author.token }}/asks" target="_blank" class="btn btn-default">
+					  		提问&nbsp;&nbsp;<span class="badge">{{ author.question_count }}</span>
+					  	</a>
+					  	<a href="https://www.zhihu.com/people/{{ author.token }}/answers" target="_blank"  class="btn btn-default">
+					  		回答&nbsp;&nbsp;<span class="badge">{{ author.answer_count }}</span>
+					  	</a>
+					  	<a href="https://www.zhihu.com/people/{{ author.token }}/posts" target="_blank"  class="btn btn-default">
+					  		文章&nbsp;&nbsp;<span class="badge">{{ author.post_count }}</span>
+					  	</a>
+					  	<a href="https://www.zhihu.com/people/{{ author.token }}/collections" target="_blank"  class="btn btn-default">
+					  		收藏&nbsp;&nbsp;<span class="badge">{{ author.collection_count }}</span>
+					  	</a>
+					  	<a href="https://www.zhihu.com/people/{{ author.token }}/logs" target="_blank"  class="btn btn-default">
+					  		公共编辑&nbsp;&nbsp;<span class="badge">{{ author.log_count }}</span>
+					  	</a>
+					</div>
+ 				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

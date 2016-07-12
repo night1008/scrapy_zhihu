@@ -1,3 +1,7 @@
 scrapy
 flask
+Flask-Login
+Flask-WTF
 mysql-python
+pony
+celery

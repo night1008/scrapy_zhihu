@@ -4,9 +4,11 @@ from flask import Flask
 from flask import json, jsonify, abort, request, flash, session, g
 from flask import render_template
 
+from flask.ext.login import login_user, login_required, current_user, logout_user
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 
-from models import Answer, Session, Question, Collection, CollectionAnswer, Author
+from models import Answer, Session, Question, Collection, CollectionAnswer, Author, User
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
@@ -19,24 +21,36 @@ app.config.update(dict(
     DEBUG=True,
 ))
 
+
+# login_manager = LoginManager()
+# login_manager.init_app(app)
 LIMIT = 10
+
+
+# @login_manager.user_loader
+# def load_user(user_id):
+#     return User.get(user_id)
 
 def get_session():
     if not hasattr(g, 'session'):
         g.session = Session()
     return g.session
 
+def validate_user(email, name, next_url=None):
+    user = User.m.find({'email': email, 'name': name}).first()
+    if not user:
+        user = Account.m.find({'email': email}).first()
+
+    if user.active:
+        login_user(user)
+        return redirect(next_url or url_for('index'))
+    else:
+        return redirect(url_for('frontend.sign_success', email=user.email))
 
 @app.teardown_appcontext
 def close_session(error):
     if hasattr(g, 'session'):
         g.session.close()
-
-
-# @app.cli.command('test_app_command')
-# def test_app_command():
-#     """Initializes the database."""
-#     print 'Test App Command'
 
 
 def get_pagination(total, limit, current_page):
@@ -78,7 +92,7 @@ def task():
 def login():
     if request.method == 'GET':
         return render_template("login.html")
-
+    login_user(user)
     email = request.form.get('email')
     password = request.form.get('password')
   
@@ -254,3 +268,5 @@ def author_detail():
 def invoke():
     return 'invoke'
 
+if __name__ == '__main__':
+    user = User.query.first()

@@ -38,18 +38,21 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
+            <li class="{% if request.path == url_for('answer') %} active {% endif %}"><a href="/answer">回答</a></li>
+            {% if current_user.is_authenticated() %}
             <li class="{% if request.path == url_for('collection') %} active {% endif %}"><a href="/collection">收藏</a></li>
             <li class="{% if request.path == url_for('question') %} active {% endif %}"><a href="/question">问题</a></li>
-            <li class="{% if request.path == url_for('answer') %} active {% endif %}"><a href="/answer">回答</a></li>
-            <li class="{% if request.path == url_for('author') %} active {% endif %}"><a href="/author">用户</a></li>            
+            <li class="{% if request.path == url_for('author') %} active {% endif %}"><a href="/author">用户</a></li>
+            {% endif %}            
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            {% if not session.logged_in %}
+            {% if not current_user.is_authenticated() %}
               <li class="{% if request.path == url_for('login') %} active {% endif %}"><a href="/login">登录</a></li>
+              <li class="{% if request.path == url_for('signup') %} active {% endif %}"><a href="/signup">注册</a></li>
             {% else %}
-              <li class="{% if request.path == url_for('login') %} active {% endif %}"><a href="/login">已登录</a></li>
-            {% endif %}            
-            <li><a href="../navbar-static-top/">Static top</a></li>
+              <li class="{% if request.path == url_for('logout') %} active {% endif %}"><a href="/logout">退出</a></li>
+            {% endif %}       
+            
             <li class=""><a href="./">Fixed top <span class="sr-only">(current)</span></a></li>
           </ul>
         </div><!--/.nav-collapse -->

@@ -101,7 +101,8 @@ class AuthorSpider(Spider):
         question_user_token = self.user_token
 
         question_id = re.search('question/(\d{8})', response.url).groups()[0]
-        question_title = response.css('div#zh-question-title h2.zm-item-title.zm-editable-content').re_first('<h2.*?>([\S\s]+)<\/h2>').replace("\n", "")
+        question_title = response.css('div#zh-question-title h2.zm-item-title span.zm-editable-content').re_first(
+            '<span.*?>([\S\s]+)<\/span>').replace("\n", "")
         question_content = response.css('div#zh-question-detail div.zm-editable-content').re_first('<div.*?>([\S\s]+)<\/div>')
         question_following_count_str = response.css('div#zh-question-side-header-wrap::text').extract()
         question_following_count = question_following_count_str[1].strip().split('\n')[0].replace(',', '')

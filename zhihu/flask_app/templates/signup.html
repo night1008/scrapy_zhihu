@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 {% block title %}
-	登录
+	注册
 {% endblock %}
 
 {% block content %}
 	<div class="row">
 		<div class="col-md-offset-4 col-md-4">
-		    <form action="/login" method="post">
-		    	<h2 class="text-center">登录</h2>
+		    <form action="/signup" method="post">
+		    	<h2 class="text-center">注册</h2>
 		    	{{ form.csrf_token }}
 		    	<div class="form-group">
 		    		{% include 'alert.html' %}
@@ -24,7 +24,13 @@
                     {% endif %}
 				    {{ form.password(class="form-control",tabindex="2", placeholder=form.password.description) }}                    
 			  	</div>
-			  	<button class="btn btn-primary btn-block" type="submit">登录</button>
+			  	<div class="form-group">
+			  		{% if form.errors.password_confirmation %}
+                    <p class="text-center text-danger">{{ form.errors.password_confirmation[0] }}</p>
+                    {% endif %}
+			  		{{ form.password_confirmation(class="form-control", placeholder=form.password_confirmation.description) }}                        
+			  	</div>
+			  	<button class="btn btn-primary btn-block" type="submit">注册</button>
 			</form>
       	</div>
 	</div>

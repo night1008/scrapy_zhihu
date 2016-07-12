@@ -9,6 +9,7 @@ engine = create_engine('mysql+mysqldb://root:100815@127.0.0.1:3306/zhihu?charset
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 
+session = Session()
 
 class Collection(Base):
     __tablename__ = 'collection'
@@ -23,7 +24,7 @@ class Collection(Base):
     updated_at = Column(DateTime, default=datetime.now)  #可用于更新机制
 
     def is_need_update(self):
-        return self.updated_at + timedelta(days=self.UPDATED_DAY) > datetime.now()
+        return self.updated_at + timedelta(days=self.UPDATED_DAY) > datetime.now()  
 
     def __repr__(self):
         return "<Collection(name='%s')>" % (self.title)
@@ -168,3 +169,18 @@ class User(Base):
 	password = Column(String)
 	created_at = Column(DateTime, default=datetime.now)
 	updated_at = Column(DateTime, default=datetime.now)
+
+    # def is_authenticated(self):
+    #     return True
+
+    # def is_active(self):
+    #     return True
+
+    # def is_anonymous(self):
+    #     return False
+
+    # def get_id(self):
+    #     return self.id
+
+    # def get_user(self, session):
+    #     pass

@@ -13,8 +13,8 @@ def get_date(date_str):
 	m = re.search(u'(\s+([\u4e00-\u9fa5]*)\s*?([0-9:]{5}))|([0-9-]{10})', date_str)
 	if m:
 		m = m.groups()	
-		logging.error('=======')	
-		logging.error(m)
+		# logging.error('=======')	
+		# logging.error(m)
 		if m[0]:
 			if m[1] == unicode(u'昨天'):
 				hours, minutes = map(lambda x: int(x), m[2].split(':'))
