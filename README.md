@@ -17,3 +17,11 @@ crawl zhihu using scrapy
 3. falsk web app
 4. 配置抽离
 5. 网页模板抽离
+6. celery发送任务
+
+# 问题记录
+> 自己本身在Window下开发的
+1. celery启动不了，出现，`ImportError: cannot import name _uuid_generate_random`,查看
+[Kombu import error on Python 2.7.11](https://github.com/celery/kombu/issues/545)
+2. 启动celery需要指定队列，若是backend使用redis,则需要启动，
+到对应redis目录下，先启动服务：`redis-server.exe redis.conf`

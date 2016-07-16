@@ -5,3 +5,4 @@ Flask-WTF
 mysql-python
 pony
 celery
+click
