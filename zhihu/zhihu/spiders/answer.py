@@ -16,7 +16,18 @@ class AnswerSpider(Spider):
     """
     name = 'zhihu_answer'
     allowed_domains = ["www.zhihu.com"]
-    start_urls = ['https://www.zhihu.com/question/41311028/answer/90756693']
+    # start_urls = ['https://www.zhihu.com/question/41311028/answer/90756693']
+
+
+    def __init__(self, url=None):
+        super(AnswerSpider, self).__init__()
+
+        self.url = url
+
+    def start_requests(self):
+        self.logger.info(self.url)
+         
+        yield Request(self.url, self.parse)
 
     def parse(self, response):
         m = re.search('question/(\d{8,})/answer/(\d{8,})', response.url)

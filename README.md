@@ -24,8 +24,6 @@ crawl zhihu using scrapy
 > 自己本身在Window下开发的
 
 1. celery启动不了，出现，
-`ImportError: cannot import name _uuid_generate_random`,
-查看[Kombu import error on Python 2.7.11](https://github.com/celery/kombu/issues/545)
+`ImportError: cannot import name _uuid_generate_random`, 查看[Kombu import error on Python 2.7.11](https://github.com/celery/kombu/issues/545)
 2. 启动celery需要指定队列，若是backend使用redis,则需要启动，
-到对应[redis](https://github.com/re757575/myHubot/tree/master/redis-2.4.5-win32-win64)目录下，先启动服务：
-`redis-server.exe redis.conf`
+到对应[redis](https://github.com/re757575/myHubot/tree/master/redis-2.4.5-win32-win64)目录下，先启动服务：`redis-server.exe redis.conf`
