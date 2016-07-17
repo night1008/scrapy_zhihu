@@ -39,6 +39,7 @@ def answer():
     #     'TASK_NAME': self.name,
     # })
     # @todo: 加入pipeline设置
+    # @todo: 换celery配置加载方式
     # https://github.com/scrapy/scrapy/blob/master/scrapy/settings/__init__.py
     kwargs = {'url': 'https://www.zhihu.com/question/41311028/answer/90756693'}
     crawler_setting = get_project_settings()
