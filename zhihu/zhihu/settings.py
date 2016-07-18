@@ -47,7 +47,7 @@ COOKIES_DEBUG = True
 
 # Override the default request headers:
 DEFAULT_REQUEST_HEADERS = {
-  	'Accept': '*/*',
+  'Accept': '*/*',
 	'Accept-Encoding': 'gzip, deflate, sdch',
 	'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6',
 	'Connection': 'keep-alive',
