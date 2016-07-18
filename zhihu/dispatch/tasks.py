@@ -1,4 +1,4 @@
-# conding: utf-8
+# coding: utf-8
 import os
 import sys
 sys.path.append(os.path.dirname(os.getcwd()))
@@ -11,8 +11,11 @@ from scrapy.utils.project import get_project_settings
 
 from zhihu.spiders.answer import AnswerSpider
 
-app = Celery('tasks', broker="redis://localhost:6379/0", 
-	backend='redis://localhost:6379/1')
+# app = Celery('zhihu', broker="redis://localhost:6379/0", 
+# 	backend='redis://localhost:6379/1')
+
+app = Celery('zhihu')
+app.config_from_object('config')
 
 @app.task
 def add(x, y):
