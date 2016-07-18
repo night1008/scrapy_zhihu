@@ -1,4 +1,8 @@
 # coding: utf-8
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
 import math
 from flask import Flask
 from flask import json, jsonify, abort, request, flash, session, g
@@ -14,10 +18,6 @@ from forms import LoginForm, SignupForm
 
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -99,7 +99,12 @@ def index():
 
 @app.route("/task", methods=['GET', 'POST'])
 def task():
-    return 'author detail'
+    if request.method == 'GET':
+        return render_template('task.html')
+
+    url = request.form.get('url')
+    
+    return render_template('task.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
 @db_session
