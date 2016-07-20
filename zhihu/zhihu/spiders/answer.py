@@ -18,7 +18,6 @@ class AnswerSpider(Spider):
     allowed_domains = ["www.zhihu.com"]
     # start_urls = ['https://www.zhihu.com/question/41311028/answer/90756693']
 
-
     def __init__(self, url=None):
         super(AnswerSpider, self).__init__()
 
