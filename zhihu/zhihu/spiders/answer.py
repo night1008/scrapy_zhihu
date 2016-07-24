@@ -24,8 +24,6 @@ class AnswerSpider(Spider):
         self.url = url
 
     def start_requests(self):
-        self.logger.info(self.url)
-         
         yield Request(self.url, self.parse)
 
     def parse(self, response):

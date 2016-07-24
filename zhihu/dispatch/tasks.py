@@ -7,9 +7,7 @@ import time
 from celery import Celery
 
 # from scrapy.crawler import CrawlerProcess
-from scrapy import crawler
-from scrapy.utils.ossignal import install_shutdown_handlers
-from scrapy.utils.log import configure_logging, log_scrapy_info
+
 from scrapy.utils.project import get_project_settings
 
 from zhihu.spiders.collection import CollectionSpider
@@ -21,7 +19,8 @@ from zhihu.spiders.author import AuthorSpider
 # 	backend='redis://localhost:6379/1')
 
 from scrapy import crawler
-
+from scrapy.utils.ossignal import install_shutdown_handlers
+from scrapy.utils.log import configure_logging, log_scrapy_info
 class CrawlerProcess(crawler.CrawlerProcess):
     # @memo: 采用此种写法打印的logger只会显示一遍，但无法写入log文件中
     def __init__(self, settings=None, install_root_handler=False):

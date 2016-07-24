@@ -148,7 +148,7 @@ class Author(db.Entity):
 
     @property
     def is_need_update(self):
-        return self.Optional + timedelta(days=self.UPDATE_DAY) > datetime.now()
+        return self.updated_at + timedelta(days=self.UPDATE_DAY) > datetime.now()
 
 
 if __name__ == '__main__':

@@ -13,10 +13,19 @@ class QuestionSpider(Spider):
     终端调用命令：scrapy crawl zhihu_question -a args -o zhihu_question.json
     问题：
     知乎图片获取不了
+    ?sort=created 可以按时间排序
     """
     name = 'zhihu_question'
     allowed_domains = ["www.zhihu.com"]
-    start_urls = ['https://www.zhihu.com/question/40170848']
+    # start_urls = ['https://www.zhihu.com/question/40170848']
+
+    def __init__(self, url=None):
+        super(QuestionSpider, self).__init__()
+
+        self.url = url
+
+    def start_requests(self):
+        yield Request(self.url, self.parse)
 
     def parse(self, response):
         m = re.search('question/(\d{8,})', response.url)

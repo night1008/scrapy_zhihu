@@ -16,25 +16,26 @@ class AuthorSpider(Spider):
     name = 'zhihu_author'
     allowed_domains = ["www.zhihu.com"]
     # start_url = 'https://www.zhihu.com/people/junlin_1980'
-    start_url = 'https://www.zhihu.com/people/evanyou'
+    # start_url = 'https://www.zhihu.com/people/evanyou'
 
-    def __init__(self, kwargs=None):
+    def __init__(self, url=None):
         super(AuthorSpider, self).__init__()
 
-        # if kwargs:
-        #     self.start_url = kwargs['url']
-        
+        self.url = url
         self.user_token = None
 
     def start_requests(self):
-        m = re.search('\/people\/(.+)', self.start_url)
+        yield Request(self.url, self.parse)
+
+    def start_requests(self):
+        m = re.search('\/people\/(.+)', self.url)
         if not m:
             self.logger.error('============>')
             self.logger.error('Parse no author token')
             return
         self.user_token = m.groups()[0]
 
-        return [Request(self.start_url, callback=self.parse)]
+        yield Request(self.url, callback=self.parse)
 
     def parse(self, response):              
         author_name = response.css('div.zm-profile-header div.title-section span.name::text').extract_first()

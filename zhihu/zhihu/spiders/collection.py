@@ -16,7 +16,7 @@ class CollectionSpider(Spider):
     """
     name = 'zhihu_collection'
     allowed_domains = ["www.zhihu.com"]
-    start_url = 'https://www.zhihu.com/collection/20170861'
+    # start_url = 'https://www.zhihu.com/collection/20170861'
     is_parse_collection = False
     
     # def start_requests(self):
@@ -46,14 +46,19 @@ class CollectionSpider(Spider):
     #     for url in self.start_urls :
     #         yield self.make_requests_from_url(url)
 
+    def __init__(self, url=None):
+        super(CollectionSpider, self).__init__()
+
+        self.url = url
+
     def start_requests(self):
-        m = re.search('\/collection\/(\d{8,})', self.start_url)
+        m = re.search('\/collection\/(\d{8,})', self.url)
         if not m:
             self.logger.error('============>')
             self.logger.error('Parse no collection id')
             return
         self.collection_id = m.groups()[0]
-        return [Request(self.start_url, callback=self.parse)]
+        yield Request(self.url, callback=self.parse)
 
     def parse(self, response):
         if not self.is_parse_collection:
