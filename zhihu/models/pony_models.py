@@ -151,6 +151,71 @@ class Author(db.Entity):
         return self.updated_at + timedelta(days=self.UPDATE_DAY) > datetime.now()
 
 
+class Task(db.Entity):
+    _table_ = 'task'
+
+    id = PrimaryKey(str)
+    scheduler_id = Required(int)
+    args = Optional(LongStr)
+    kwargs = Optional(LongStr)
+    error = Optional(LongStr)
+    status = Required(int, default=datetime.now) # 0：正在执行，1：执行成功，2：执行失败，3：重试
+    finished_at = Optional(datetime)
+    created_at = Required(datetime, default=datetime.now)
+    updated_at = Required(datetime, default=datetime.now)
+
+
+class UserScheduler(db.Entity):
+    _table_ = 'user_scheduler'
+
+    id = PrimaryKey(int, unsigned=True, auto=True)
+    user_id = Required(str)
+    scheduler_id = Required(int)
+    status = Required(int, default=0) # 0: 正常状态， 1：关闭状态
+    created_at = Required(datetime, default=datetime.now)
+    updated_at = Required(datetime, default=datetime.now)
+
+
+class Cron(db.Entity):
+    _table_ = 'cron'
+
+    id = PrimaryKey(int, unsigned=True, auto=True)
+    type = Required(str)
+    name = Required(str)
+    schedule = Required(str)
+    day_offset = Required(int, default=1)
+    status = Required(int, default=0) # 0: 正常状态， 1：关闭状态
+    created_at = Required(datetime, default=datetime.now)
+    updated_at = Required(datetime, default=datetime.now)
+
+
+class Scheduler(db.Entity):
+    _table_ = 'scheduler'
+
+    id = PrimaryKey(int, unsigned=True, auto=True)
+    type = Required(str)
+    kwargs = Optional(LongStr)
+    last_snapped_at = Optional(datetime)
+    cron_id = Required(int)
+    created_at = Required(datetime, default=datetime.now)
+    updated_at = Required(datetime, default=datetime.now)
+
+
+class Task(db.Entity):
+    _table_ = 'task'
+
+    id = PrimaryKey(str)
+    scheduler_id = Required(int)
+    args = Optional(LongStr)
+    kwargs = Optional(LongStr)
+    error = Optional(LongStr)
+    status = Required(int, default=0) # 0：正在执行，1：执行成功，2：执行失败，3：重试
+    finished_at = Optional(datetime)
+    created_at = Required(datetime, default=datetime.now)
+    updated_at = Required(datetime, default=datetime.now)
+
+
+        
 if __name__ == '__main__':
 
     # @todo: 测试
