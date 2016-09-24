@@ -53,3 +53,10 @@ class SignupForm(Form):
         user = select(u for u in User if u.email == field.data.strip()).first()
         if user:
             raise ValidationError('邮箱已存在')
+
+
+class UserSchedulerForm(Form):
+    url = TextField(u'链接',
+                      validators=[
+                            Required(message='链接不能为空')],
+                      description='链接')

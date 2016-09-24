@@ -4,6 +4,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 import math
+import re
 from flask import Flask
 from flask import json, jsonify, abort, request, flash, session, g
 from flask import render_template, redirect, url_for
@@ -14,7 +15,7 @@ from pony.orm import db_session, select, commit, desc
 
 from models.pony_models import db, Answer, User, Question, \
     Collection, CollectionAnswer, Author
-from forms import LoginForm, SignupForm
+from forms import LoginForm, SignupForm, UserSchedulerForm
 
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
@@ -83,6 +84,27 @@ def get_pagination(total, limit, current_page):
         'page_range': page_range,
     }
 
+def get_scheduler_type(url):
+    """
+    根据传入的url解析得到任务类型
+    """
+    m = re.match('^https?://www.zhihu.com/question/\d{8,}/answer/\d{8,}$', url)
+    if m:
+        return 'answer'
+
+    m = re.match('^https?://www.zhihu.com/question/\d{8,}$', url)
+    if m:
+        return 'question'
+
+    m = re.match('^https?://www.zhihu.com/collection/\d{8,}$', url)
+    if m:
+        return 'collection'
+
+    m = re.match('^https?://www.zhihu.com/people/(.+)$', url)
+    if m:
+        return 'author'
+
+
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
@@ -99,12 +121,23 @@ def index():
 
 @app.route("/task", methods=['GET', 'POST'])
 def task():
-    if request.method == 'GET':
-        return render_template('task.html')
+    user_scheduler_form = UserSchedulerForm(request.form)
+    context = {
+        'form': user_scheduler_form,
+    }
 
-    url = request.form.get('url')
-    
-    return render_template('task.html')
+    if request.method == 'GET':
+        return render_template('task.html', **context)
+
+    url = request.form.get('url', None)
+
+    if url:
+        url = url.strip()
+        type = get_scheduler_type(url)
+    else:
+
+
+    return render_template('task.html', **context)
 
 @app.route('/signup', methods=['GET', 'POST'])
 @db_session

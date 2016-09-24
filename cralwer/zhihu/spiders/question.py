@@ -5,7 +5,6 @@ import re
 from zhihu.items import AnswerItem, QuestionItem
 from zhihu.utils import get_date
 
-
 class QuestionSpider(Spider):
     """
     抓取知乎收藏的内容
