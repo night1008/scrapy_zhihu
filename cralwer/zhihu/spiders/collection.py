@@ -1,9 +1,11 @@
 #coding: utf-8
-from datetime import datetime
-from scrapy import Spider, Request
 import re
-from zhihu.items import AnswerItem, QuestionItem, CollectionAnswerItem, CollectionItem
-from zhihu.utils import get_date
+from datetime import datetime
+
+from scrapy import Spider, Request
+
+from ..items import AnswerItem, QuestionItem, CollectionAnswerItem, CollectionItem
+from ..utils import get_date
 
 class CollectionSpider(Spider):
     """

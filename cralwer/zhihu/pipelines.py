@@ -5,9 +5,12 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 from datetime import datetime
-from zhihu.items import AnswerItem, QuestionItem, AuthorItem, CollectionAnswerItem, CollectionItem
-from models.pony_models import db, Answer, Question, Author, CollectionAnswer, Collection
+
 from pony.orm import db_session, select, commit, desc
+
+from .items import AnswerItem, QuestionItem, AuthorItem, CollectionAnswerItem, CollectionItem
+from models.pony_models import db, Answer, Question, Author, CollectionAnswer, Collection
+
 
 class ZhihuPipeline(object):
     def __init__(self, crawler):
