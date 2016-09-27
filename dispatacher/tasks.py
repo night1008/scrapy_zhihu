@@ -10,10 +10,10 @@ from celery import Celery
 
 from scrapy.utils.project import get_project_settings
 
-from zhihu.spiders.collection import CollectionSpider
-from zhihu.spiders.answer import AnswerSpider
-from zhihu.spiders.question import QuestionSpider
-from zhihu.spiders.author import AuthorSpider
+from cralwer.zhihu.spiders.collection import CollectionSpider
+from cralwer.zhihu.spiders.answer import AnswerSpider
+from cralwer.zhihu.spiders.question import QuestionSpider
+from cralwer.zhihu.spiders.author import AuthorSpider
 
 # app = Celery('zhihu', broker="redis://localhost:6379/0", 
 # 	backend='redis://localhost:6379/1')

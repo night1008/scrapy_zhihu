@@ -119,25 +119,25 @@ def test():
 def index():
     return render_template('index.html')
 
-@app.route("/task", methods=['GET', 'POST'])
-def task():
-    user_scheduler_form = UserSchedulerForm(request.form)
-    context = {
-        'form': user_scheduler_form,
-    }
+# @app.route("/task", methods=['GET', 'POST'])
+# def task():
+#     user_scheduler_form = UserSchedulerForm(request.form)
+#     context = {
+#         'form': user_scheduler_form,
+#     }
 
-    if request.method == 'GET':
-        return render_template('task.html', **context)
+#     if request.method == 'GET':
+#         return render_template('task.html', **context)
 
-    url = request.form.get('url', None)
+#     url = request.form.get('url', None)
 
-    if url:
-        url = url.strip()
-        type = get_scheduler_type(url)
-    else:
+#     if url:
+#         url = url.strip()
+#         type = get_scheduler_type(url)
+#     else:
+#         pass
 
-
-    return render_template('task.html', **context)
+#     return render_template('task.html', **context)
 
 @app.route('/signup', methods=['GET', 'POST'])
 @db_session

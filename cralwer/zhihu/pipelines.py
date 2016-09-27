@@ -11,7 +11,6 @@ from pony.orm import db_session, select, commit, desc
 from .items import AnswerItem, QuestionItem, AuthorItem, CollectionAnswerItem, CollectionItem
 from models.pony_models import db, Answer, Question, Author, CollectionAnswer, Collection
 
-
 class ZhihuPipeline(object):
     def __init__(self, crawler):
         self.crawler = crawler
@@ -59,6 +58,7 @@ class ZhihuPipeline(object):
 
         if isinstance(item, AuthorItem):
             author = Author.get(token=item['token'])
+            # @todo: biography 和 description
             if not author:
                 author = Author(**dict(item))
             elif author.is_need_update:
