@@ -41,9 +41,10 @@ class AuthorSpider(Spider):
 
     def parse(self, response):              
         author_name = response.css('div.zm-profile-header div.title-section span.name::text').extract_first()
-        author_biography = response.css('div.zm-profile-header div.title-section span.bio::attr(title)').extract_first()
+        author_biography = response.css('div.zm-profile-header div.title-section div.bio::attr(title)').extract_first()
         author_pic_url = response.css('img.Avatar::attr(src)').extract_first()
-        author_description = response.css('div.zm-profile-header-description span.description span.content').re('<span.*?>([\S\s]+)<\/span>')
+        author_description = response.css('div.zm-profile-header-description span.description span.content').re_first('<span.*?>([\S\s]+)<\/span>')
+        author_description = author_description.strip()
         author_location = response.css('span.item.location::attr(title)').extract_first()
         author_business = response.css('span.item.business::attr(title)').extract_first()
         
