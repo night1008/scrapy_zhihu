@@ -19,6 +19,7 @@ from forms import LoginForm, SignupForm, UserSchedulerForm
 
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
+from config.web_config import DB
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -55,14 +56,6 @@ def validate_user(email, next_url=None):
 
 
 LIMIT = 10
-DB = {
-        'host': '127.0.0.1',
-        'port': 3306,
-        'user': 'root',
-        'passwd': '100815',
-        'db': 'zhihu',
-    }
-
 db.bind('mysql', **DB)
 db.generate_mapping()
 

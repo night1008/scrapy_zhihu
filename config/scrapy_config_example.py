@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
+from .web_config import DB
 
 SCRAPY = {
-    'DB': {
-        'host': 'HOST',
-        'port': 'PORT',
-        'user': 'USERNAME',
-        'passwd': 'PASSWORD',
-        'db': 'DBNAME',
-    },
+    'DB': DB,
     'BOT_NAME': 'zhihu',
     # 'SPIDER_MODULES': ['zhihu.spiders'],
     # 'NEWSPIDER_MODULE': 'zhihu.spiders',
