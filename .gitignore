@@ -1,4 +1,5 @@
-zhihu/config.py
+config/celery_config.py
+config/scrapy_config.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
