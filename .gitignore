@@ -1,6 +1,6 @@
-config/celery_config.py
-config/scrapy_config.py
-config/web_config.py
+config/celery.py
+config/scrapy.py
+config/web.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
