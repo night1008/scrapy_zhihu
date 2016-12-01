@@ -1,14 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Custom Setting
-DB = {
-        'host': '127.0.0.1',
-        'port': 3306,
-        'user': 'root',
-        'passwd': '100815',
-        'db': 'zhihu',
-    }
-
 # Scrapy settings for stackoverflow project
 #
 # For simplicity, this file contains only settings considered important or

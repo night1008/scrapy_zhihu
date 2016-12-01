@@ -5,9 +5,11 @@ sys.setdefaultencoding("utf-8")
 
 import math
 import re
+import requests
 from flask import Flask
 from flask import json, jsonify, abort, request, flash, session, g
 from flask import render_template, redirect, url_for
+from flask import send_file, make_response
 from flask.ext.login import LoginManager, AnonymousUserMixin, \
     login_user, login_required, current_user, logout_user
 
@@ -19,6 +21,7 @@ from forms import LoginForm, SignupForm, UserSchedulerForm
 
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
+
 from config.web_config import DB
 
 app = Flask(__name__)
@@ -36,7 +39,7 @@ LIMIT = 10
 
 @login_manager.user_loader
 @db_session
-def load_user(user_id):    
+def load_user(user_id):
     if user_id:
         user = User.get(id=user_id)
     else:
@@ -97,6 +100,51 @@ def get_scheduler_type(url):
     if m:
         return 'author'
 
+from datetime import timedelta
+from flask import make_response, request, current_app
+from functools import update_wrapper
+
+
+def crossdomain(origin=None, methods=None, headers=None,
+                max_age=21600, attach_to_all=True,
+                automatic_options=True):
+    if methods is not None:
+        methods = ', '.join(sorted(x.upper() for x in methods))
+    if headers is not None and not isinstance(headers, basestring):
+        headers = ', '.join(x.upper() for x in headers)
+    if not isinstance(origin, basestring):
+        origin = ', '.join(origin)
+    if isinstance(max_age, timedelta):
+        max_age = max_age.total_seconds()
+
+    def get_methods():
+        if methods is not None:
+            return methods
+
+        options_resp = current_app.make_default_options_response()
+        return options_resp.headers['allow']
+
+    def decorator(f):
+        def wrapped_function(*args, **kwargs):
+            if automatic_options and request.method == 'OPTIONS':
+                resp = current_app.make_default_options_response()
+            else:
+                resp = make_response(f(*args, **kwargs))
+            if not attach_to_all and request.method != 'OPTIONS':
+                return resp
+
+            h = resp.headers
+
+            h['Access-Control-Allow-Origin'] = origin
+            h['Access-Control-Allow-Methods'] = get_methods()
+            h['Access-Control-Max-Age'] = str(max_age)
+            if headers is not None:
+                h['Access-Control-Allow-Headers'] = headers
+            return resp
+
+        f.provide_automatic_options = False
+        return update_wrapper(wrapped_function, f)
+    return decorator
 
 @app.errorhandler(404)
 def not_found(error):
@@ -142,14 +190,14 @@ def signup():
 
     if request.method == 'GET':
         return render_template("signup.html", **context)
-   
+
     if signup_form.validate_on_submit():
         email = signup_form.email.data.strip()
         password = signup_form.password.data.strip()
         password_hash = User.set_password(password)
         user = User(email=email, password=password_hash)
         commit()
-        flash('注册成功', 'success')  
+        flash('注册成功', 'success')
         return redirect(url_for('index'))
 
     return render_template("signup.html", **context)
@@ -188,7 +236,7 @@ def logout():
 @db_session
 def answer():
     page = request.args.get('page', 1, int)
-    
+
     answers_query = select(a for a in Answer).order_by(desc(Answer.vote_up))
     answers = answers_query.page(page, pagesize=LIMIT)
 
@@ -199,7 +247,10 @@ def answer():
 
 @app.route("/answer/<answer_id>")
 @db_session
+@crossdomain(origin='*')
 def answer_detail(answer_id):
+    print request.url_root
+    print request.headers['Host']
     answer = Answer.get(id=answer_id)
     if not answer:
         abort(404)
@@ -212,7 +263,7 @@ def answer_detail(answer_id):
 @db_session
 def question():
     page = request.args.get('page', 1, int)
-    
+
     questions_query = select(a for a in Question).order_by(desc(Question.answer_count))
     questions = questions_query.page(page, pagesize=LIMIT)
 
@@ -256,12 +307,12 @@ def collection_detail(collection_id):
     page = request.args.get('page', 1, int)
 
     collection = Collection.get(id=collection_id)
-                            
+
     if not collection:
         abort(404)
-    
+
     collection_answers_query = select(cs for cs in CollectionAnswer if cs.collection_id == collection_id)
-    
+
     collection_answers = collection_answers_query.page(page, pagesize=LIMIT)
 
     answer_ids = [ca.answer_id for ca in collection_answers]
@@ -276,9 +327,9 @@ def collection_detail(collection_id):
 @db_session
 def author():
     page = request.args.get('page', 1, int)
-    
+
     authors_query = select(a for a in Author).order_by(desc(Author.id))
-    
+
     authors = authors_query.page(page, pagesize=LIMIT)
 
     pagination = get_pagination(authors_query.count(), LIMIT, page)
@@ -294,3 +345,15 @@ def author_detail(token):
         abort(404)
 
     return render_template('author/detail.html', author=author)
+
+@app.route("/image")
+def get_image():
+    # @todo: 加入缓存
+    url = request.args.get('src')
+    r = requests.get(url,
+        headers={
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36',
+        })
+    response = make_response(r.content)
+    response.headers['Content-Type'] = r.headers['content-type']
+    return response

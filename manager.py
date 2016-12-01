@@ -21,8 +21,7 @@ if __name__ == "__main__":
 
 	print crawler_setting.get('DB')
 	print crawler_setting.get('BOT_NAME')
-	print AuthorSpider
 
 	process = CrawlerProcess(crawler_setting)
-	process.crawl(AuthorSpider, url='https://www.zhihu.com/people/evanyou')
-	process.start() 
+	process.crawl(AnswerSpider, url='https://pic2.zhimg.com/v2-113ddad0903626ce2615ffe2af43d069_r.png')
+	process.start()

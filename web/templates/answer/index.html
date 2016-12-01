@@ -30,3 +30,14 @@
 	</div>
 	{% include 'pagination.html' %}
 {% endblock %}
+
+{% block app_js %}
+<script type="text/javascript">
+$(function() {
+    $( "img" ).each(function(index) {
+        var src = $(this).attr('src');
+        $(this).attr('src', '/image?src=' + src);
+    });
+});
+</script>
+{% endblock %}

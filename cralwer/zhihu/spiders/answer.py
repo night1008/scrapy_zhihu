@@ -1,5 +1,6 @@
 #coding: utf-8
 import re
+import os.path
 from datetime import datetime
 
 from scrapy import Spider, Request
@@ -7,10 +8,11 @@ from scrapy import Spider, Request
 from ..items import AnswerItem, QuestionItem
 from ..utils import get_date
 
+
 class AnswerSpider(Spider):
     """
     抓取知乎答案的内容
-    页面规则： 
+    页面规则：
     终端调用命令：scrapy crawl zhihu_answer -a args -o zhihu_answer.json
     问题：
     知乎图片获取不了
@@ -25,18 +27,19 @@ class AnswerSpider(Spider):
         self.url = url
 
     def start_requests(self):
-        yield Request(self.url, self.parse)
+        yield Request(self.url, self.save_image)
+        # yield Request(self.url, self.parse)
 
     def parse(self, response):
         m = re.search('question/(\d{8,})/answer/(\d{8,})', response.url)
-        
+
         if not m:
             self.logger.error('=============>')
             self.logger.error(response.url)
             return
 
         self.question_id, self.answer_id = m.groups()
-            
+
         question_url_str = response.css('h2.zm-item-title a::attr("href")').extract_first()
         if question_url_str:
             question_url = response.urljoin(question_url_str)
@@ -84,7 +87,7 @@ class AnswerSpider(Spider):
         question_following_count_str = response.css('div#zh-question-side-header-wrap::text').extract()
         question_following_count = question_following_count_str[1].strip().split('\n')[0].replace(',', '')
         question_review_count = response.css('a.toggle-comment[name*=addcomment]::text').re_first('([0-9,]+)')
-        
+
         if not question_review_count:
             question_review_count = 0
         else:
